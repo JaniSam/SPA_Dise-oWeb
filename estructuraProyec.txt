@@ -1,0 +1,21 @@
+spa-management-system/
+│
+├── backend/
+│   ├── controladores/
+│   ├── modelos/
+│   ├── routes/
+│   ├── middlewares/
+│
+├── frontend/
+│   ├── js/
+│   ├── views/
+│   └── assets/
+│
+├── database/
+│   ├── schema.sql
+│   ├── seed.sql
+│   └── migrations/
+│
+├── docs/
+│
+└── README.md
