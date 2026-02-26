@@ -24,7 +24,20 @@
         </nav>
         <div class="container mt-5">
             <div class="row align-items-center">
-                
+                <div id="calendar"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var calendar = new FullCalendar.Calendar(
+    document.getElementById('calendar'),
+    {
+      initialView: 'timeGridWeek',
+      events: 'obtener_reservas.php'
+    }
+  );
+  calendar.render();
+});
+</script>
             </div>
         </div> 
         <footer class="mt-auto fw-bold text-white text-center bg-dark py-2">
