@@ -1,0 +1,55 @@
+body{
+  margin:0;
+  font-family:'Karla', sans-serif;
+  text-align:center;
+
+  /* FONDO DE TODA LA PAGINA */
+  background-image: url("img/fondo-spa.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ENCABEZADO */
+
+.hero{
+  padding:100px 20px;
+  color:rgb(153, 116, 14);
+}
+
+/* LOGO */
+
+.logo{
+  width:120px;
+  margin-bottom:20px;
+}
+
+/* SERVICIOS */
+
+.servicios{
+  background:rgb(250, 233, 185);
+  padding:60px 20px;
+}
+
+/* CONTENEDOR */
+
+.contenedor-servicios{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  flex-wrap:wrap;
+}
+
+/* TARJETAS */
+
+.card{
+  width:300px;
+  background:#925913;
+  padding:20px;
+  border-radius:10px;
+}
+
+.card img{
+  width:100%;
+  border-radius:8px;
+}
