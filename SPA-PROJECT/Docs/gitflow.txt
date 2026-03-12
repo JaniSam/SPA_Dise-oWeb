@@ -1,0 +1,31 @@
+# Estructura del repositorio
+    main   (rama principal)
+        |
+        |
+        ▼
+        develop    (rama de desarrollo)
+                |  
+                |  cada rama de cada integrantes
+                |  se nombra con la esructura que le
+                |  corresponde + su función.
+                ▼
+                frontend/login          
+                frontend/reservas       
+                frontend/calendario     
+                backend/usuarios
+                backend/recepción 
+                backend/facturación     (kevin)
+
+                etc........
+
+    para clonar el trabajo, el git se selcciona la rama develop, y de ella
+    el link para ejecutar git clone url/repositorio/develop
+
+#Herramientas Utilizadas
+    - PHP (8.2.12)
+    - PostgreSQL
+    - Composer (2.9.5)
+    -     
+
+# Instalacion de dependencias
+    1° instalar xampp 
