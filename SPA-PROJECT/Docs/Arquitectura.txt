@@ -1,0 +1,159 @@
+# Descripción del Proyecto
+
+Este proyecto consiste en el desarrollo de un sistema web de gestión empresarial para un SPA, el cual permitirá administrar reservas, servicios, salas y usuarios del establecimiento.
+
+El sistema tiene como objetivo facilitar la gestión de turnos y evitar conflictos en la asignación de especialistas o cabinas.
+
+El desarrollo se realiza de manera colaborativa utilizando control de versiones mediante Git y un repositorio remoto en GitHub.
+
+# Tecnologías Utilizadas
+    ----------------------------------------------
+   | Componente	          |  Tecnología           |
+   | ---------------------|-----------------------|
+   | Backend	          |  Laravel (PHP 8.2.12) |
+   | Frontend	          |  Vue.js               |
+   | Base de Datos	      |  PostgreSQL           |
+   | Control de Versiones |	 Git                  |
+   | API	              |  REST                 |
+   | Autenticación	      |  JWT                  |
+   | Servidor	          |  Apache / Nginx       |
+    ----------------------------------------------
+
+Arquitectura del Sistema
+
+El sistema sigue una arquitectura SPA (Single Page Application) con separación entre frontend y backend.
+
+# Arquitectura general:
+
+    Frontend (Vue SPA)
+            │
+            │ HTTP / JSON
+            ▼
+    Backend API (Laravel)
+            │
+            ▼
+    Base de datos PostgreSQL
+
+        Características:
+
+        - Backend desacoplado
+        - Comunicación mediante API REST
+        - Manejo de autenticación mediante tokens JWT
+        - Control de acceso basado en roles
+
+# Estructura del Proyecto
+    El repositorio se organiza de la siguiente forma:
+
+        /backend
+            Laravel API
+            Controllers
+            Models
+            Routes
+            Middleware
+
+        /frontend
+            Vue SPA
+            Components
+            Views
+            Router
+
+        /database
+            Scripts SQL
+            Diagrama ER
+
+        /docs
+            Documentación del proyecto
+
+# Módulos del Sistema
+
+    El sistema se divide en los siguientes módulos principales:
+
+    ## 1. Autenticación
+    Permite el acceso al sistema mediante login.
+
+    Roles disponibles:
+    - Administrador
+    - Recepcionista
+    - Profesional
+
+    Funciones:
+    - Inicio de sesión
+    - Validación de credenciales
+    - Control de acceso por rol
+
+    ---
+
+    ## 2. Gestión de Usuarios
+    Acceso exclusivo del administrador.
+
+    Funciones:
+    - Crear usuarios
+    - Editar usuarios
+    - Eliminar usuarios
+    - Asignar roles
+
+    ---
+
+    ## 3. Gestión de Servicios
+    Administrado únicamente por el administrador.
+
+    Funciones:
+    - Crear servicios
+    - Editar servicios
+    - Eliminar servicios
+    - Definir duración y precio
+
+    ---
+
+    ## 4. Gestión de Profesionales
+    Permite administrar los profesionales que realizan los servicios.
+
+    Funciones:
+    - Registrar profesionales
+    - Definir horarios de trabajo
+    - Asociar servicios que pueden realizar
+
+    ---
+
+    ## 5. Gestión de Reservas
+    Permite registrar y administrar las citas de los clientes.
+
+    Funciones:
+    - Crear reserva
+    - Reprogramar reserva
+    - Cancelar reserva
+    - Ver reservas por fecha
+
+    Validaciones:
+    - No permitir reservar una sala ocupada
+    - No permitir reservar un profesional ocupado
+
+    ---
+
+    ## 6. Pagos y Facturación
+    Permite registrar el pago de los servicios.
+
+    Funciones:
+    - Registrar pagos
+    - Generar factura
+    - Ver historial de pagos
+
+    ---
+
+    ## 7. Calendario de Reservas
+    Vista visual de las reservas.
+
+    Funciones:
+    - Visualización por día
+    - Visualización por semana
+    - Agenda de citas
+
+    ---
+
+    ## 8. Dashboard
+    Panel principal del sistema.
+
+    Funciones:
+    - Ver citas del día
+    - Alertas de citas próximas
+    - Acceso rápido a funciones principales

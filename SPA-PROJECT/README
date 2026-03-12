@@ -1,0 +1,62 @@
+# Sistema de Gestión para SPA
+
+Este proyecto consiste en el desarrollo de un sistema web para la gestión de un SPA.
+
+El sistema permitirá administrar reservas, servicios, profesionales y pagos, facilitando el control de turnos y evitando conflictos en la asignación de cabinas o especialistas.
+
+El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
+
+# Tecnologías Utilizadas
+
+- Backend: Laravel (PHP 8.2.12)
+- Frontend: Vue.js
+- Base de datos: PostgreSQL
+- Control de versiones: Git
+- Autenticación: JWT
+
+# Arquitectura del Sistema
+
+El sistema utiliza una arquitectura SPA (Single Page Application) con separación entre frontend y backend.
+
+Frontend (Vue.js)
+        │
+        ▼
+Backend API (Laravel)
+        │
+        ▼
+Base de datos PostgreSQL
+
+# Módulos del Sistema
+
+El sistema cuenta con los siguientes módulos principales:
+
+- Autenticación de usuarios
+- Gestión de usuarios
+- Gestión de servicios
+- Gestión de profesionales
+- Gestión de reservas
+- Pagos y facturación
+- Calendario de reservas
+
+# Estrategia de Control de Versiones
+
+El proyecto utiliza GitFlow.
+    Ramas principales:
+        main → versión estable  
+        develop → integración del desarrollo
+    Ramas de trabajo:
+        feature/* → nuevas funcionalidades
+        hotfix/* → correcciones urgentes
+
+# Instalación
+
+1 Clonar el repositorio
+    git clone url-del-repositorio
+2 Instalar dependencias del backend
+    composer install
+3 Instalar dependencias del frontend
+    npm install
+4 Ejecutar el proyecto
+    php artisan serve
+    npm run dev
+
