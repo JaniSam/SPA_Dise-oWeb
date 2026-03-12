@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SPA 8 MOSQUETEROS</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@300;400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+
+</head>
+
+<body>
+
+<!-- HERO -->
+
+<header class="hero">
+
+<img src="img/logo.png" class="logo">
+
+<h1>SPA 8 MOSQUETEROS</h1>
+
+<p>
+Bienvenidos a nuestro spa de relajación,
+déjenos su mente y cuerpo en nuestras manos
+y salga con la energía renovada para seguir su día.
+</p>
+
+<a href="#agenda" class="btn-agenda">Reservar Cita</a>
+
+</header>
+
+
+<!-- SERVICIOS -->
+
+<section class="servicios">
+
+<h2>Servicios</h2>
+
+<div class="contenedor-servicios">
+
+<div class="card">
+<img src="img/masaje.jpg" alt="Masaje">
+<h3>Masaje Relajante</h3>
+</div>
+
+<div class="card">
+<img src="img/facial.jpg" alt="Facial">
+<h3>Limpieza Facial</h3>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- AGENDA -->
+
+<section id="agenda">
+
+<h2>Agenda de Citas</h2>
+
+<div id="calendar"></div>
+
+</section>
+
+
+<!-- SCRIPT CALENDARIO -->
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function(){
+
+let calendarEl = document.getElementById('calendar');
+
+let calendar = new FullCalendar.Calendar(calendarEl,{
+
+initialView:'timeGridWeek',
+
+locale:'es',
+
+slotMinTime:"08:00:00",
+slotMaxTime:"20:00:00",
+
+headerToolbar:{
+left:'prev,next today',
+center:'title',
+right:'timeGridDay,timeGridWeek,dayGridMonth'
+}
+
+});
+
+calendar.render();
+
+});
+
+</script>
+
+</body>
+</html>
