@@ -1,16 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Dashboard from "../pages/Dashboard.vue";
-import Visitors from "../pages/Visitors.vue";
+import Calendar from "../pages/Calendar.vue";
+import Clients from "../pages/Clients.vue";
+import Users from "../pages/Users.vue";
 
 const routes = [
   {
     path: "/",
-    component: Dashboard,
+    component: Calendar,
   },
   {
-    path: "/visitors",
-    component: Visitors,
+    path: "/calendar",
+    component: Calendar,
+  },
+  {
+    path: "/clients",
+    component: Clients,
+  },
+  {
+    path: "/users",
+    component: Users,
   },
 ];
 

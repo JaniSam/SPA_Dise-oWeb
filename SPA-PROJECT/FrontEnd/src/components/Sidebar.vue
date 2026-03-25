@@ -3,7 +3,9 @@
     <h2>Recepción</h2>
 
     <router-link to="/">Dashboard</router-link>
-    <router-link to="/visitors">Visitantes</router-link>
+    <router-link to="/calendar">Calendario</router-link>
+    <router-link to="/clients">Clientes</router-link>
+    <router-link to="/users">Usuarios</router-link>
   </div>
 </template>
 
