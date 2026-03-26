@@ -16,9 +16,9 @@
                 backend/recepción       ()
                 backend/facturación     (kevin)
                 etc........
-
-    para clonar el repositorio, en github se selcciona la rama develop, y de ella
-    el link/url para ejecutar "git clone url/repositorio/develop"
+        Cada integrante trabaja en su propia rama siguiendo la estructura:
+            <tipo>/<función>
+            Ejemplo: backend/usuarios
 
 # Herramientas Utilizadas
     - Xampp (con Apache PHP 8.2.12)
@@ -41,52 +41,7 @@
     Esto clona la rama develop.
        
     Después ingresar al proyecto:
-        cd <NOMBRE_DEL_REPOSITORIO_DONDE_FUE_GUARDADO>
-
-# Instalar Composer y dependencias PHP
-    Instalar Composer desde https://getcomposer.org
-    En la carpeta raíz del proyecto ejecutar:
-        composer install
-    Esto descargará todas las dependencias de Laravel.
-
-# Configuración del entorno Laravel
-
-    Configurar en .env los datos de PostgreSQL:
-
-        DB_CONNECTION=pgsql
-        DB_HOST=127.0.0.1
-        DB_PORT=5432
-        DB_DATABASE=nombre_base
-        DB_USERNAME=usuario
-        DB_PASSWORD=contraseña
-
-    Ejecutar migraciones si las hay:
-        php artisan migrate
-
-# Instalar Node y dependencias frontend
-    En Windows PowerShell, permitir ejecutar scripts temporalmente:
-
-        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-
-    Ir a la carpeta frontend:
-
-        cd C:\Libreria\SPA_Dise-oWeb\spa-project\frontend
-
-    Instalar dependencias:
-        npm install
-
-    Ejecutar el proyecto en modo desarrollo:
-        npm run dev
-
-    Esto levantará Laravel Mix para compilar JS y CSS.
-
-# Levantar el backend Laravel
-
-    Volver a la carpeta raíz del proyecto:
-        cd ..
-    Ejecutar:
-        php artisan serve
-    Esto levantará el backend en http://127.0.0.1:8000.
+        cd SPA_Dise-oWeb
 
 # Crear ramas de trabajo
 
@@ -109,15 +64,89 @@
         git commit -m "Descripción de los cambios"
         git push -u origin <nombre_rama>
 
-# Traer cambios de otros compañeros
+# Instalar Composer y dependencias PHP
+    Instalar Composer desde https://getcomposer.org
+    En la carpeta backend del proyecto:
+        cd spa-project/backend
+        Instalar dependencias:
+            composer install
+    Esto descargará todas las dependencias de Laravel.
 
-    Si otro compañero hizo cambios en su rama (frontend/reservas):
+# Configuración del entorno Laravel
 
+    Copiar archivo de entorno:
+        cp .env.example .env
+    Generar clave:
+        php artisan key:generate
+
+    Configurar en .env los datos de PostgreSQL:
+
+        DB_CONNECTION=pgsql
+        DB_HOST=127.0.0.1
+        DB_PORT=5432
+        DB_DATABASE=nombre_base
+        DB_USERNAME=usuario
+        DB_PASSWORD=contraseña
+
+    Ejecutar migraciones:
+        php artisan migrate
+
+# Instalar Node y dependencias frontend
+    En Windows PowerShell, permitir ejecutar scripts temporalmente:
+
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+    Ir a la carpeta frontend:
+
+        cd C:\Libreria\SPA_Dise-oWeb\spa-project\frontend
+
+    Instalar dependencias:
+        npm install
+
+    Ejecutar el proyecto en modo desarrollo:
+        npm run dev
+
+    Esto levantará Laravel Mix para compilar JS y CSS.
+
+# Levantar el backend Laravel
+
+    En carpeta backend ejecutar:
+        php artisan serve
+    Servidor:
+        http://127.0.0.1:8000
+
+    En la carpeta frontend:
+        npm run dev
+
+# Archivos que NO se deben subir
+
+    Cada integrante debe crear su propio .env:
+        cp .env.example .env
+    
+    Y configurar su propia base de datos.
+    
+    Gracias al .gitignore, estos archivos NO deben subirse:
+        /vendor
+        /node_modules
+        .env
+    (Cada desarrollador debe generar estos archivos localmente.)
+
+# Treaer cambios de develop
+    Asegurate de estar en tu rama
+        git branch
+
+    Traer cambios del repositorio
         git fetch origin
-        git checkout frontend/reservas
-        git pull origin frontend/reservas
 
-    Para ver sus cambios localmente, podés revisar la rama directamente.
+    Traer lo último de develop
+        git checkout develop
+        git pull origin develop    
+
+    Volver a tu rama
+        git checkout backend/usuarios
+
+    Hacer merge de develop en tu rama
+        git merge develop
 
 # Integrar cambios a develop (merge)
 
@@ -130,7 +159,7 @@
 
         Hacer merge de tu rama:
 
-            git merge backend/usuarios-jani
+            git merge backend/usuarios
 
         - Resolver conflictos si los hubiera
         - Commit automático si es necesario
@@ -140,3 +169,14 @@
             git push origin develop
         
         ✅ Así, develop siempre tendrá la última versión de todos los cambios integrados.
+
+        actualizar los cambios de la ramra develop
+            git branch 
+                deben estar posicionados en sus ramas. Ej: backend/usuarios
+            git fetch origin // traer los cambios del repositorio
+            git checkout develop // traer los ultimos cambios de develop
+            git pull origin develop
+
+            git checkout backend/... // volver a la rama (git branch para asegurar)
+            
+            git merge develop -m "merge develop into backend/usuarios"//hacer merge de develop en tu rama sin abrir el editor
