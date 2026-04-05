@@ -43,26 +43,6 @@
     Después ingresar al proyecto:
         cd SPA_Dise-oWeb
 
-# Crear ramas de trabajo
-
-    Para crear una rama nueva a partir de develop:
-
-        git checkout develop
-        git pull origin develop     // traer cambios de develop
-        git checkout -b <nombre_rama>  // crear la rama y direccionarse a ella
-    
-    Cada integrante debe trabajar en su propia rama siguiendo la nomenclatura:
-        <tipo>/<función>
-        Ejemplo: frontend/login
-
-    Después de hacer cambios, enviar la rama al repositorio remoto:
-
-        git status                                      // Primero siempre revisá qué archivos modificaste
-        git add .                                       // Subir todos las modificaciones 
-            git add index.html                          // Subir solo el archivo index.html
-            git add backend/vista/
-        git commit -m "Descripción de los cambios"
-        git push -u origin <nombre_rama>
 
 # Instalar Composer y dependencias PHP
     Instalar Composer desde https://getcomposer.org
@@ -92,31 +72,43 @@
         php artisan migrate
 
 # Instalar Node y dependencias frontend
+    
     En Windows PowerShell, permitir ejecutar scripts temporalmente:
 
         Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
     Ir a la carpeta frontend:
 
-        cd C:\Libreria\SPA_Dise-oWeb\spa-project\frontend
+        cd spa-project/frontend
 
     Instalar dependencias:
         npm install
-
-    Ejecutar el proyecto en modo desarrollo:
-        npm run dev
-
-    Esto levantará Laravel Mix para compilar JS y CSS.
+        npm install @fullcalendar/vue3 @fullcalendar/core @fullcalendar/timegrid @fullcalendar/interaction
 
 # Levantar el backend Laravel
 
     En carpeta backend ejecutar:
         php artisan serve
-    Servidor:
-        http://127.0.0.1:8000
+        Servidor:
+            http://127.0.0.1:8000
 
     En la carpeta frontend:
         npm run dev
+    Esto levantará Laravel Mix para compilar JS y CSS.
+
+    Si aparece error al ejecutar npm:
+        "execution of scripts is disabled" 
+    Ejecutar:
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# Error común: librerías faltantes en frontend
+
+    Si aparece un error como:
+        Failed to resolve import "nombre-libreria"
+    Significa que falta instalar dependencias.
+    
+    Solución: Instalar la librería específica:
+        npm install nombre-libreria
 
 # Archivos que NO se deben subir
 
@@ -131,6 +123,27 @@
         .env
     (Cada desarrollador debe generar estos archivos localmente.)
 
+# Crear ramas de trabajo
+
+    Para crear una rama nueva a partir de develop:
+
+        git checkout develop
+        git pull origin develop     // traer cambios de develop
+        git checkout -b <nombre_rama>  // crear la rama y direccionarse a ella
+    
+    Cada integrante debe trabajar en su propia rama siguiendo la nomenclatura:
+        <tipo>/<función>
+        Ejemplo: frontend/login
+
+    Después de hacer cambios, enviar la rama al repositorio remoto:
+
+        git status                                      // Primero siempre revisá qué archivos modificaste
+        git add .                                       // Subir todos las modificaciones 
+            git add index.html                          // Subir solo el archivo index.html
+            git add backend/vista/
+        git commit -m "Descripción de los cambios"
+        git push -u origin <nombre_rama>
+        
 # Treaer cambios de develop
     Asegurate de estar en tu rama
         git branch
@@ -143,10 +156,13 @@
         git pull origin develop    
 
     Volver a tu rama
-        git checkout backend/usuarios
+       ej: git checkout backend/usuarios
 
     Hacer merge de develop en tu rama
         git merge develop
+
+    Hacer merge de develop en tu rama sin abrir el editor
+        git merge develop -m "merge develop into backend/usuarios"
 
 # Integrar cambios a develop (merge)
 
@@ -170,13 +186,4 @@
         
         ✅ Así, develop siempre tendrá la última versión de todos los cambios integrados.
 
-        actualizar los cambios de la ramra develop
-            git branch 
-                deben estar posicionados en sus ramas. Ej: backend/usuarios
-            git fetch origin // traer los cambios del repositorio
-            git checkout develop // traer los ultimos cambios de develop
-            git pull origin develop
-
-            git checkout backend/... // volver a la rama (git branch para asegurar)
-            
             git merge develop -m "merge develop into backend/usuarios"//hacer merge de develop en tu rama sin abrir el editor
