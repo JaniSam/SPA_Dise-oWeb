@@ -17,11 +17,10 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
                 |  se nombra con la esructura que le
                 |  corresponde + su función.
                 ▼
-                frontend/login          (Ayelen)
-                frontend/reservas       ()
-                frontend/calendario     ()
+                backend/login           (Ayelen)
+                backend/reservas        (Merlina )
+                frontend/calendario     (Rodrigo)
                 backend/usuarios        (Janina)
-                backend/recepción       ()
                 backend/facturación     (kevin)
                 etc........
         Cada integrante trabaja en su propia rama siguiendo la estructura:
@@ -195,3 +194,21 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
         ✅ Así, develop siempre tendrá la última versión de todos los cambios integrados.
 
             git merge develop -m "merge develop into backend/usuarios"//hacer merge de develop en tu rama sin abrir el editor
+
+# Levantar Backend (Laravel)
+    
+    Abrir una Terminal estando en la carpeta backend y ejecutar
+        cd SPA_Dise-oWeb\SPA-PROJECT/backend
+            php artisan serve
+    Entrar en url 
+        http://127.0.0.1:8000
+
+# Levantar Frontend (Vue)
+
+    Abrir otra terminal y ejecutar
+        cd SPA_Dise-oWeb\SPA-PROJECT/frontend
+    Url del sistema 
+        http://localhost:5173
+
+
+    

@@ -24,10 +24,10 @@
 
         <tbody>
           <tr v-for="user in users" :key="user.id">
-            <td class="user-name">{{ user.name }}</td>
+            <td class="user-name">{{ user.nombre }} {{ user.apellido }}</td>
             <td class="user-email">{{ user.email }}</td>
             <td>
-              <span class="role-badge" :class="user.role">{{ user.role }}</span>
+              <span class="role-badge">Rol {{ user.rol_id }}</span>
             </td>
             <td>
               <span class="status-dot" :class="user.status"></span>
@@ -63,41 +63,23 @@
 
         <form @submit.prevent="saveUser" class="spa-form">
           <div class="input-group">
-            <label>Nombre del Funcionario</label>
-            <input
-              type="text"
-              placeholder="Ej: Carlos Aranda"
-              v-model="form.name"
-              required
-            />
+            <label>Nombre</label>
+            <input v-model="form.nombre" required />
           </div>
 
           <div class="input-group">
-            <label>Correo Electrónico</label>
-            <input
-              type="email"
-              placeholder="usuario@sistema.com"
-              v-model="form.email"
-              required
-            />
+            <label>Apellido</label>
+            <input v-model="form.apellido" required />
           </div>
 
-          <div class="form-row">
-            <div class="input-group">
-              <label>Rol de Acceso</label>
-              <select v-model="form.role">
-                <option value="admin">Administrador</option>
-                <option value="recepcionista">Recepcionista</option>
-                <option value="seguridad">Seguridad</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Estado</label>
-              <select v-model="form.status">
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
-              </select>
-            </div>
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" v-model="form.email" required />
+          </div>
+
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" v-model="form.password" required />
           </div>
 
           <div class="modal-actions">
@@ -118,67 +100,111 @@
 export default {
   data() {
     return {
-      users: [
-        {
-          id: 1,
-          name: "Administrador",
-          email: "admin@sistema.com",
-          role: "admin",
-          status: "activo",
-        },
-        {
-          id: 2,
-          name: "Recepcionista",
-          email: "recepcion@sistema.com",
-          role: "recepcionista",
-          status: "activo",
-        },
-      ],
+      users: [],
       showModal: false,
       isEditing: false,
       form: {
         id: null,
-        name: "",
+        nombre: "",
+        apellido: "",
         email: "",
-        role: "recepcionista",
-        status: "activo",
+        telefono: "",
+        password: "",
+        rol_id: 1,
+        activo: true
       },
     };
   },
+
   methods: {
+    // 📥 TRAER USUARIOS DESDE BACKEND
+    async getUsers() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/usuarios");
+        const data = await res.json();
+        this.users = data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    // ➕ ABRIR MODAL NUEVO
     openCreateModal() {
       this.isEditing = false;
       this.form = {
         id: null,
-        name: "",
+        nombre: "",
+        apellido: "",
         email: "",
-        role: "recepcionista",
-        status: "activo",
+        telefono: "",
+        password: "",
+        rol_id: 1,
+        activo: true
       };
       this.showModal = true;
     },
+
+    // ✏️ EDITAR
     openEditModal(user) {
       this.isEditing = true;
       this.form = { ...user };
       this.showModal = true;
     },
-    saveUser() {
-      if (this.isEditing) {
-        const index = this.users.findIndex((u) => u.id === this.form.id);
-        this.users[index] = { ...this.form };
-      } else {
-        this.form.id = Date.now();
-        this.users.push({ ...this.form });
+
+    // 💾 GUARDAR EN BACKEND
+    async saveUser() {
+      try {
+        let url = "http://127.0.0.1:8000/api/usuarios";
+        let method = "POST";
+
+        if (this.isEditing) {
+          url += `/${this.form.id}`;
+          method = "PUT";
+        }
+
+        const res = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(this.form)
+        });
+
+        const data = await res.json();
+
+        console.log("Guardado:", data);
+
+        alert("Usuario guardado correctamente");
+
+        this.getUsers();
+        this.closeModal();
+
+      } catch (error) {
+        console.error(error);
       }
-      this.closeModal();
     },
-    deleteUser(id) {
-      this.users = this.users.filter((u) => u.id !== id);
+
+    // ❌ ELIMINAR
+    async deleteUser(id) {
+      try {
+        await fetch(`http://127.0.0.1:8000/api/usuarios/${id}`, {
+          method: "DELETE"
+        });
+
+        this.getUsers();
+      } catch (error) {
+        console.error(error);
+      }
     },
+
     closeModal() {
       this.showModal = false;
-    },
+    }
   },
+
+  mounted() {
+    this.getUsers();
+  }
 };
 </script>
 
