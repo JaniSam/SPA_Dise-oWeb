@@ -43,7 +43,7 @@
               </button>
               <button
                 class="btn-delete"
-                @click="deleteUser(user.id)"
+                @click="openDeleteModal(user)"
                 title="Eliminar"
               >
                 ✕
@@ -54,6 +54,7 @@
       </table>
     </div>
 
+    <!-- MODAL CREAR / EDITAR -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal">
         <div class="modal-header">
@@ -93,6 +94,32 @@
         </form>
       </div>
     </div>
+
+    <!-- MODAL CONFIRMAR ELIMINACIÓN -->
+    <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeDeleteModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Confirmar Eliminación</h2>
+          <div class="header-line"></div>
+        </div>
+
+        <p style="text-align:center; margin: 20px 0;">
+          ¿Estás segura que deseas eliminar a
+          <strong>
+            {{ userToDelete?.nombre }} {{ userToDelete?.apellido }}
+          </strong>?
+        </p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="closeDeleteModal">
+            Cancelar
+          </button>
+          <button class="btn-delete" @click="confirmDelete">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -102,7 +129,9 @@ export default {
     return {
       users: [],
       showModal: false,
+      showDeleteModal: false,
       isEditing: false,
+      userToDelete: null,
       form: {
         id: null,
         nombre: "",
@@ -117,7 +146,6 @@ export default {
   },
 
   methods: {
-    // 📥 TRAER USUARIOS DESDE BACKEND
     async getUsers() {
       try {
         const res = await fetch("http://127.0.0.1:8000/api/usuarios");
@@ -128,7 +156,6 @@ export default {
       }
     },
 
-    // ➕ ABRIR MODAL NUEVO
     openCreateModal() {
       this.isEditing = false;
       this.form = {
@@ -144,14 +171,17 @@ export default {
       this.showModal = true;
     },
 
-    // ✏️ EDITAR
     openEditModal(user) {
       this.isEditing = true;
       this.form = { ...user };
       this.showModal = true;
     },
 
-    // 💾 GUARDAR EN BACKEND
+    openDeleteModal(user) {
+      this.userToDelete = user;
+      this.showDeleteModal = true;
+    },
+
     async saveUser() {
       try {
         let url = "http://127.0.0.1:8000/api/usuarios";
@@ -184,14 +214,17 @@ export default {
       }
     },
 
-    // ❌ ELIMINAR
-    async deleteUser(id) {
+    async confirmDelete() {
       try {
-        await fetch(`http://127.0.0.1:8000/api/usuarios/${id}`, {
+        await fetch(`http://127.0.0.1:8000/api/usuarios/${this.userToDelete.id}`, {
           method: "DELETE"
         });
 
+        alert("Usuario eliminado correctamente");
+
         this.getUsers();
+        this.closeDeleteModal();
+
       } catch (error) {
         console.error(error);
       }
@@ -199,6 +232,11 @@ export default {
 
     closeModal() {
       this.showModal = false;
+    },
+
+    closeDeleteModal() {
+      this.showDeleteModal = false;
+      this.userToDelete = null;
     }
   },
 
