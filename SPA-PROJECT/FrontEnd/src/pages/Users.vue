@@ -16,6 +16,7 @@
           <tr>
             <th>Nombre</th>
             <th>Email</th>
+            <th>Teléfono</th>
             <th>Rol</th>
             <th>Estado</th>
             <th class="actions-header">Acciones</th>
@@ -26,28 +27,17 @@
           <tr v-for="user in users" :key="user.id">
             <td class="user-name">{{ user.nombre }} {{ user.apellido }}</td>
             <td class="user-email">{{ user.email }}</td>
+            <td>{{ user.telefono }}</td>
             <td>
               <span class="role-badge">Rol {{ user.rol_id }}</span>
             </td>
             <td>
-              <span class="status-dot" :class="user.status"></span>
-              <span class="status-text">{{ user.status }}</span>
+              <span class="status-dot" :class="user.activo ? 'activo' : 'inactivo'"></span>
+              <span class="status-text">{{ user.activo ? 'activo' : 'inactivo' }}</span>
             </td>
             <td class="actions-cell">
-              <button
-                class="btn-edit"
-                @click="openEditModal(user)"
-                title="Editar"
-              >
-                ✎
-              </button>
-              <button
-                class="btn-delete"
-                @click="openDeleteModal(user)"
-                title="Eliminar"
-              >
-                ✕
-              </button>
+              <button class="btn-edit" @click="openEditModal(user)" title="Editar">✎</button>
+              <button class="btn-delete" @click="openDeleteModal(user)" title="Eliminar">✕</button>
             </td>
           </tr>
         </tbody>
@@ -70,7 +60,7 @@
 
           <div class="input-group">
             <label>Apellido</label>
-            <input v-model="form.apellido" required />
+            <input v-model="form.apellido" />
           </div>
 
           <div class="input-group">
@@ -79,43 +69,57 @@
           </div>
 
           <div class="input-group">
+            <label>Teléfono</label>
+            <input v-model="form.telefono" />
+          </div>
+
+          <div class="input-group">
             <label>Password</label>
             <input type="password" v-model="form.password" required />
           </div>
 
+          <div class="form-row">
+            <div class="input-group">
+              <label>Rol</label>
+              <select v-model="form.rol_id">
+                <option :value="1">Admin</option>
+                <option :value="2">Recepcionista</option>
+                <option :value="3">Terapeuta</option>
+                <option :value="4">Cliente</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Estado</label>
+              <select v-model="form.activo">
+                <option :value="true">Activo</option>
+                <option :value="false">Inactivo</option>
+              </select>
+            </div>
+          </div>
+
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" @click="closeModal">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-save">
-              {{ isEditing ? "Actualizar" : "Guardar Usuario" }}
-            </button>
+            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="submit" class="btn-save">{{ isEditing ? "Actualizar" : "Guardar Usuario" }}</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- MODAL CONFIRMAR ELIMINACIÓN -->
-    <div v-if="showDeleteModal" class="modal-overlay" @click.self="closeDeleteModal">
+    <!-- MODAL CONFIRMACION (GENÉRICO) -->
+    <div v-if="showConfirmModal" class="modal-overlay" @click.self="closeConfirmModal">
       <div class="modal">
         <div class="modal-header">
-          <h2>Confirmar Eliminación</h2>
+          <h2>{{ confirmTitle }}</h2>
           <div class="header-line"></div>
         </div>
 
-        <p style="text-align:center; margin: 20px 0;">
-          ¿Estás segura que deseas eliminar a
-          <strong>
-            {{ userToDelete?.nombre }} {{ userToDelete?.apellido }}
-          </strong>?
-        </p>
+        <p style="text-align:center; margin:20px 0;">{{ confirmMessage }}</p>
 
         <div class="modal-actions">
-          <button class="btn-cancel" @click="closeDeleteModal">
-            Cancelar
-          </button>
-          <button class="btn-delete" @click="confirmDelete">
-            Eliminar
+          <button class="btn-cancel" @click="closeConfirmModal">Cancelar</button>
+          <button :class="confirmType === 'delete' ? 'btn-delete' : 'btn-save'" @click="executeAction">
+            Confirmar
           </button>
         </div>
       </div>
@@ -129,9 +133,15 @@ export default {
     return {
       users: [],
       showModal: false,
-      showDeleteModal: false,
       isEditing: false,
-      userToDelete: null,
+
+      // 🔥 confirmación
+      showConfirmModal: false,
+      confirmType: "", // save | update | delete
+      confirmTitle: "",
+      confirmMessage: "",
+      tempUser: null,
+
       form: {
         id: null,
         nombre: "",
@@ -139,23 +149,25 @@ export default {
         email: "",
         telefono: "",
         password: "",
-        rol_id: 1,
+        rol_id: 2,
         activo: true
       },
     };
   },
 
   methods: {
-    async getUsers() {
-      try {
-        const res = await fetch("http://127.0.0.1:8000/api/usuarios");
-        const data = await res.json();
-        this.users = data;
-      } catch (error) {
-        console.error(error);
+    saveUser() {
+      if (this.isEditing) {
+        const index = this.users.findIndex(u => u.id === this.form.id);
+        this.users[index] = { ...this.form };
+        alert("Usuario actualizado correctamente");
+      } else {
+        this.form.id = Date.now();
+        this.users.push({ ...this.form });
+        alert("Usuario guardado correctamente");
       }
+      this.closeModal();
     },
-
     openCreateModal() {
       this.isEditing = false;
       this.form = {
@@ -165,7 +177,7 @@ export default {
         email: "",
         telefono: "",
         password: "",
-        rol_id: 1,
+        rol_id: 2,
         activo: true
       };
       this.showModal = true;
@@ -177,72 +189,39 @@ export default {
       this.showModal = true;
     },
 
+    // 👉 abrir confirmación para guardar/actualizar
+    
+
+    // 👉 abrir confirmación para eliminar
     openDeleteModal(user) {
-      this.userToDelete = user;
-      this.showDeleteModal = true;
+      this.tempUser = user;
+      this.confirmType = "delete";
+      this.confirmTitle = "Confirmar eliminación";
+      this.confirmMessage = `¿Eliminar a ${user.nombre} ${user.apellido}?`;
+
+      this.showConfirmModal = true;
     },
 
-    async saveUser() {
-      try {
-        let url = "http://127.0.0.1:8000/api/usuarios";
-        let method = "POST";
-
-        if (this.isEditing) {
-          url += `/${this.form.id}`;
-          method = "PUT";
-        }
-
-        const res = await fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(this.form)
-        });
-
-        const data = await res.json();
-
-        console.log("Guardado:", data);
-
-        alert("Usuario guardado correctamente");
-
-        this.getUsers();
-        this.closeModal();
-
-      } catch (error) {
-        console.error(error);
-      }
-    },
-
-    async confirmDelete() {
-      try {
-        await fetch(`http://127.0.0.1:8000/api/usuarios/${this.userToDelete.id}`, {
-          method: "DELETE"
-        });
-
+    // 🚀 ejecutar acción confirmada
+    executeAction() {
+      if (this.confirmType === "delete") {
+        this.users = this.users.filter(u => u.id !== this.tempUser.id);
         alert("Usuario eliminado correctamente");
-
-        this.getUsers();
-        this.closeDeleteModal();
-
-      } catch (error) {
-        console.error(error);
       }
+
+      this.closeConfirmModal();
     },
 
     closeModal() {
       this.showModal = false;
     },
 
-    closeDeleteModal() {
-      this.showDeleteModal = false;
-      this.userToDelete = null;
+    closeConfirmModal() {
+      this.showConfirmModal = false;
+      this.confirmType = "";
+      this.tempUser = null;
     }
   },
-
-  mounted() {
-    this.getUsers();
-  }
 };
 </script>
 
