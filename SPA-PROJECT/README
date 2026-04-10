@@ -1,4 +1,4 @@
-# Sistema de Gestión para SPA
+# 1. Sistema de Gestión para SPA
 
 Este proyecto consiste en el desarrollo de un sistema web para la gestión de un SPA.
 
@@ -6,7 +6,7 @@ El sistema permitirá administrar reservas, servicios, profesionales y pagos, fa
 
 El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
 
-# Estructura del repositorio
+# 2. Estructura del repositorio
     main   (rama principal)
         |
         |
@@ -14,7 +14,7 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
         develop    (rama de desarrollo)
                 |  
                 |  cada rama de cada integrantes
-                |  se nombra con la esructura que le
+                |  se nombra con la estructura que le
                 |  corresponde + su función.
                 ▼
                 backend/login           (Ayelen)
@@ -27,22 +27,14 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
             <tipo>/<función>
             Ejemplo: backend/usuarios
 
-# Herramientas Utilizadas
+# 3. Herramientas Utilizadas
     - Xampp (con Apache PHP 8.2.12)
     - PostgreSQL
     - Composer (v2.9.5)
     - Node.js   (v24.14.0 o superior)
     ⚠️ Asegurarse de agregar PHP y Node al PATH del sistema.
 
-# Configuración inicial para PHP
-    Abrir el archivo php.ini de XAMPP (normalmente: C:\xampp\php\php.ini).
-    Habilitar las extensiones necesarias eliminando ; al inicio de cada línea:
-        extension=zip
-        extension=pgsql
-        extension=pdo_pgsql
-    Guardar el archivo y reiniciar Apache.
-
-# Clonar repositorio
+# 4. Clonar repositorio
     Abrir la terminal y ejecutar:
         git clone -b develop https://github.com/JaniSam/SPA_Dise-oWeb.git
     Esto clona la rama develop.
@@ -50,35 +42,58 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
     Después ingresar al proyecto:
         cd SPA_Dise-oWeb
 
+# 5. Configuración inicial para PHP
+    Abrir el archivo php.ini de XAMPP (normalmente: C:\xampp\php\php.ini).
+    Habilitar las extensiones necesarias eliminando ; al inicio de cada línea:
+        extension=zip
+        extension=pgsql
+        extension=pdo_pgsql
+    Guardar el archivo y reiniciar Apache.
 
-# Instalar Composer y dependencias PHP
+# 6. Instalar Composer y dependencias PHP
     Instalar Composer desde https://getcomposer.org
     En la carpeta backend del proyecto:
-        cd spa-project/backend
+        cd SPA_Dise-oWeb/SPA-PROJECT/backend
         Instalar dependencias:
             composer install
     Esto descargará todas las dependencias de Laravel.
 
-# Configuración del entorno Laravel
+# 7. Configuración del entorno Laravel
 
-    Copiar archivo de entorno:
+    Laravel usa un archivo .env para la configuración local (base de datos, puertos, etc.).
+    Ejecutar en la carpeta backend:
         cp .env.example .env
-    Generar clave:
-        php artisan key:generate
+    Esto crea una copia del archivo de ejemplo
 
-    Configurar en .env los datos de PostgreSQL:
+    Generar clave de la aplicación
+        Laravel necesita una clave única para funcionar:
+            php artisan key:generate
 
-        DB_CONNECTION=pgsql
-        DB_HOST=127.0.0.1
-        DB_PORT=5432
-        DB_DATABASE=nombre_base
-        DB_USERNAME=usuario
-        DB_PASSWORD=contraseña
+    Crear la base de datos antes de ejecutar migraciones
 
-    Ejecutar migraciones:
+    Configurar conexión a PostgreSQL
+        Abrir el archivo .env y editar estas líneas:
+            DB_CONNECTION=pgsql
+            DB_HOST=127.0.0.1
+            DB_PORT=5432
+            DB_DATABASE=spa_db
+            DB_USERNAME=postgres
+            DB_PASSWORD=tu_contraseña
+
+        Importante:
+            Asegurarse de que PostgreSQL esté encendido
+            Que la base de datos ya exista (crear en pgAdmin o HeidiSQL)
+
+    Limpiar caché de configuración
+        Esto evita errores cuando cambias el .env:
+            php artisan config:clear
+            php artisan cache:clear
+   
+    Ejecutar migraciones
         php artisan migrate
+    Esto crea las tablas automáticamente en la base de datos.
 
-# Instalar Node y dependencias frontend
+# 8. Instalar Node y dependencias frontend
     
     En Windows PowerShell, permitir ejecutar scripts temporalmente:
 
@@ -86,13 +101,13 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
 
     Ir a la carpeta frontend:
 
-        cd spa-project/frontend
+        cd SPA_Dise-oWeb/SPA-PROJECT/frontend
 
     Instalar dependencias:
         npm install
         npm install @fullcalendar/vue3 @fullcalendar/core @fullcalendar/timegrid @fullcalendar/interaction
 
-# Levantar el backend Laravel
+# 9. Levantar el backend Laravel
 
     En carpeta backend ejecutar:
         php artisan serve
@@ -101,14 +116,14 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
 
     En la carpeta frontend:
         npm run dev
-    Esto levantará Laravel Mix para compilar JS y CSS.
+    Esto levantará el servidor de desarrollo de Vite.
 
     Si aparece error al ejecutar npm:
         "execution of scripts is disabled" 
     Ejecutar:
         Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
-# Error común: librerías faltantes en frontend
+# 10. Error común: librerías faltantes en frontend
 
     Si aparece un error como:
         Failed to resolve import "nombre-libreria"
@@ -118,17 +133,87 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
         npm install nombre-libreria
 
 # Archivos que NO se deben subir
-
-    Cada integrante debe crear su propio .env:
-        cp .env.example .env
-    
-    Y configurar su propia base de datos.
     
     Gracias al .gitignore, estos archivos NO deben subirse:
         /vendor
         /node_modules
         .env
     (Cada desarrollador debe generar estos archivos localmente.)
+
+# Arquitectura del sistema
+
+    Frontend (Vue)
+        ↓ HTTP (fetch / API)
+    Backend (Laravel)
+        ↓
+    PostgreSQL
+
+# Probar API (opcional)
+
+    Se puede probar el backend sin frontend usando navegador:
+
+        http://127.0.0.1:8000/api/usuarios
+
+    Debe devolver un JSON.
+
+    Si no responde:
+        - Verificar que el backend esté corriendo
+        - Revisar conexión a base de datos
+
+# Ejecutar el sistema
+
+Se deben abrir DOS terminales:
+    🔹 Terminal 1 - Backend
+        cd SPA_Dise-oWeb/SPA-PROJECT/backend
+            php artisan serve
+
+        URL:   http://127.0.0.1:8000
+
+    🔹 Terminal 2 - Frontend
+        cd SPA_Dise-oWeb/SPA-PROJECT/frontend
+            npm run dev
+
+        URL:    http://localhost:5173
+
+# Conexión Frontend - Backend
+
+    El frontend consume la API del backend en:
+
+        http://127.0.0.1:8000/api/usuarios
+
+    IMPORTANTE:
+        El backend debe estar corriendo, de lo contrario aparecerá:
+        ERR_CONNECTION_REFUSED
+
+# Crear estructura backend (CRUD)
+
+    Crear modelo + migración
+        php artisan make:model Usuario -m
+    Esto crea:
+        Modelo → app/Models/Usuario.php
+        Migración → database/migrations/...
+    
+    Crear controlador
+        php artisan make:controller UsuarioController
+    Se crea en:
+        app/Http/Controllers/UsuarioController.php
+        
+    Después de crear la migración:
+        php artisan migrate
+
+# Definir rutas API
+
+    Editar el archivo:
+        routes/api.php
+
+    Agregar: use App\Http\Controllers\UsuarioController;
+
+    Ejemplo:
+        Route::get('/usuarios', [UsuarioController::class, 'index']);
+        Route::post('/usuarios', [UsuarioController::class, 'store']);
+        Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
+        Route::put('/usuarios/{id}', [UsuarioController::class, 'update']);
+        Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']); 
 
 # Crear ramas de trabajo
 
@@ -150,8 +235,8 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
             git add backend/vista/
         git commit -m "Descripción de los cambios"
         git push -u origin <nombre_rama>
-        
-# Treaer cambios de develop
+
+# Traer cambios de develop
     Asegurate de estar en tu rama
         git branch
 
@@ -194,21 +279,3 @@ El desarrollo se realiza de forma colaborativa utilizando Git y GitHub.
         ✅ Así, develop siempre tendrá la última versión de todos los cambios integrados.
 
             git merge develop -m "merge develop into backend/usuarios"//hacer merge de develop en tu rama sin abrir el editor
-
-# Levantar Backend (Laravel)
-    
-    Abrir una Terminal estando en la carpeta backend y ejecutar
-        cd SPA_Dise-oWeb\SPA-PROJECT/backend
-            php artisan serve
-    Entrar en url 
-        http://127.0.0.1:8000
-
-# Levantar Frontend (Vue)
-
-    Abrir otra terminal y ejecutar
-        cd SPA_Dise-oWeb\SPA-PROJECT/frontend
-    Url del sistema 
-        http://localhost:5173
-
-
-    
