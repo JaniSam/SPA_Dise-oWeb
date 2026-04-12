@@ -22,29 +22,46 @@
             <th class="actions-header">Acciones</th>
           </tr>
         </thead>
-
         <tbody>
           <tr v-for="user in users" :key="user.id">
             <td class="user-name">{{ user.nombre }} {{ user.apellido }}</td>
             <td class="user-email">{{ user.email }}</td>
             <td>{{ user.telefono }}</td>
             <td>
-              <span class="role-badge">Rol {{ user.rol_id }}</span>
+              <span class="role-badge" :class="getRoleClass(user.rol_id)">
+                {{ getRoleName(user.rol_id) }}
+              </span>
             </td>
             <td>
-              <span class="status-dot" :class="user.activo ? 'activo' : 'inactivo'"></span>
-              <span class="status-text">{{ user.activo ? 'activo' : 'inactivo' }}</span>
+              <span
+                class="status-dot"
+                :class="user.activo ? 'activo' : 'inactivo'"
+              ></span>
+              <span class="status-text">{{
+                user.activo ? "activo" : "inactivo"
+              }}</span>
             </td>
             <td class="actions-cell">
-              <button class="btn-edit" @click="openEditModal(user)" title="Editar">✎</button>
-              <button class="btn-delete" @click="openDeleteModal(user)" title="Eliminar">✕</button>
+              <button
+                class="btn-edit"
+                @click="openEditModal(user)"
+                title="Editar"
+              >
+                ✎
+              </button>
+              <button
+                class="btn-delete"
+                @click="openDeleteModal(user)"
+                title="Eliminar"
+              >
+                ✕
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- MODAL CREAR / EDITAR -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal">
         <div class="modal-header">
@@ -57,27 +74,22 @@
             <label>Nombre</label>
             <input v-model="form.nombre" required />
           </div>
-
           <div class="input-group">
             <label>Apellido</label>
             <input v-model="form.apellido" />
           </div>
-
           <div class="input-group">
             <label>Email</label>
             <input type="email" v-model="form.email" required />
           </div>
-
           <div class="input-group">
             <label>Teléfono</label>
             <input v-model="form.telefono" />
           </div>
-
           <div class="input-group">
             <label>Password</label>
             <input type="password" v-model="form.password" required />
           </div>
-
           <div class="form-row">
             <div class="input-group">
               <label>Rol</label>
@@ -85,10 +97,8 @@
                 <option :value="1">Admin</option>
                 <option :value="2">Recepcionista</option>
                 <option :value="3">Terapeuta</option>
-                <option :value="4">Cliente</option>
               </select>
             </div>
-
             <div class="input-group">
               <label>Estado</label>
               <select v-model="form.activo">
@@ -97,28 +107,37 @@
               </select>
             </div>
           </div>
-
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
-            <button type="submit" class="btn-save">{{ isEditing ? "Actualizar" : "Guardar Usuario" }}</button>
+            <button type="button" class="btn-cancel" @click="closeModal">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-save">
+              {{ isEditing ? "Actualizar" : "Guardar Usuario" }}
+            </button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- MODAL CONFIRMACION (GENÉRICO) -->
-    <div v-if="showConfirmModal" class="modal-overlay" @click.self="closeConfirmModal">
+    <div
+      v-if="showConfirmModal"
+      class="modal-overlay"
+      @click.self="closeConfirmModal"
+    >
       <div class="modal">
         <div class="modal-header">
           <h2>{{ confirmTitle }}</h2>
           <div class="header-line"></div>
         </div>
-
-        <p style="text-align:center; margin:20px 0;">{{ confirmMessage }}</p>
-
+        <p style="text-align: center; margin: 20px 0">{{ confirmMessage }}</p>
         <div class="modal-actions">
-          <button class="btn-cancel" @click="closeConfirmModal">Cancelar</button>
-          <button :class="confirmType === 'delete' ? 'btn-delete' : 'btn-save'" @click="executeAction">
+          <button class="btn-cancel" @click="closeConfirmModal">
+            Cancelar
+          </button>
+          <button
+            :class="confirmType === 'delete' ? 'btn-delete' : 'btn-save'"
+            @click="executeAction"
+          >
             Confirmar
           </button>
         </div>
@@ -134,14 +153,11 @@ export default {
       users: [],
       showModal: false,
       isEditing: false,
-
-      // 🔥 confirmación
       showConfirmModal: false,
-      confirmType: "", // save | update | delete
+      confirmType: "",
       confirmTitle: "",
       confirmMessage: "",
       tempUser: null,
-
       form: {
         id: null,
         nombre: "",
@@ -150,22 +166,39 @@ export default {
         telefono: "",
         password: "",
         rol_id: 2,
-        activo: true
+        activo: true,
       },
     };
   },
-
+  mounted() {
+    // REGLA DE ORO: Bloqueo de seguridad si no es Admin
+    const role = localStorage.getItem("user-role");
+    if (role !== "admin") {
+      alert("Acceso restringido a administradores.");
+      this.$router.push("/calendar");
+      return;
+    }
+    const saved = localStorage.getItem("spa-users");
+    if (saved) this.users = JSON.parse(saved);
+  },
   methods: {
+    getRoleName(id) {
+      const roles = { 1: "Admin", 2: "Recepcionista", 3: "Terapeuta" };
+      return roles[id] || "Personal";
+    },
+    getRoleClass(id) {
+      const classes = { 1: "admin", 2: "recepcionista", 3: "seguridad" };
+      return classes[id] || "";
+    },
     saveUser() {
       if (this.isEditing) {
-        const index = this.users.findIndex(u => u.id === this.form.id);
+        const index = this.users.findIndex((u) => u.id === this.form.id);
         this.users[index] = { ...this.form };
-        alert("Usuario actualizado correctamente");
       } else {
         this.form.id = Date.now();
         this.users.push({ ...this.form });
-        alert("Usuario guardado correctamente");
       }
+      localStorage.setItem("spa-users", JSON.stringify(this.users));
       this.closeModal();
     },
     openCreateModal() {
@@ -178,83 +211,63 @@ export default {
         telefono: "",
         password: "",
         rol_id: 2,
-        activo: true
+        activo: true,
       };
       this.showModal = true;
     },
-
     openEditModal(user) {
       this.isEditing = true;
       this.form = { ...user };
       this.showModal = true;
     },
-
-    // 👉 abrir confirmación para guardar/actualizar
-    
-
-    // 👉 abrir confirmación para eliminar
     openDeleteModal(user) {
       this.tempUser = user;
       this.confirmType = "delete";
       this.confirmTitle = "Confirmar eliminación";
-      this.confirmMessage = `¿Eliminar a ${user.nombre} ${user.apellido}?`;
-
+      this.confirmMessage = `¿Eliminar a ${user.nombre}?`;
       this.showConfirmModal = true;
     },
-
-    // 🚀 ejecutar acción confirmada
     executeAction() {
       if (this.confirmType === "delete") {
-        this.users = this.users.filter(u => u.id !== this.tempUser.id);
-        alert("Usuario eliminado correctamente");
+        this.users = this.users.filter((u) => u.id !== this.tempUser.id);
+        localStorage.setItem("spa-users", JSON.stringify(this.users));
       }
-
       this.closeConfirmModal();
     },
-
     closeModal() {
       this.showModal = false;
     },
-
     closeConfirmModal() {
       this.showConfirmModal = false;
-      this.confirmType = "";
-      this.tempUser = null;
-    }
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Estructura y Fondo */
 .users-page {
   padding: 40px;
   background-color: #f9f7f2;
   min-height: 100vh;
   font-family: "Inter", sans-serif;
 }
-
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
-
 .page-header h1 {
   font-size: 1.8rem;
   font-weight: 300;
   color: #4a4a4a;
   margin: 0;
 }
-
 .subtitle {
   color: #8daa91;
   margin-top: 5px;
   font-size: 0.9rem;
 }
-
-/* Tabla Estilo Profesional */
 .table-container {
   background: white;
   border-radius: 16px;
@@ -262,12 +275,10 @@ export default {
   border: 1px solid #e5e0d8;
   overflow: hidden;
 }
-
 table {
   width: 100%;
   border-collapse: collapse;
 }
-
 th {
   background: #fdfdfb;
   padding: 16px;
@@ -278,24 +289,16 @@ th {
   color: #a3a3a3;
   border-bottom: 1px solid #f0ebe3;
 }
-
 td {
   padding: 16px;
   border-bottom: 1px solid #f9f7f2;
   color: #555;
   font-size: 0.95rem;
 }
-
 .user-name {
   font-weight: 600;
   color: #4a4a4a;
 }
-.user-email {
-  color: #888;
-  font-size: 0.9rem;
-}
-
-/* Badges y Estados */
 .role-badge {
   font-size: 0.75rem;
   padding: 4px 10px;
@@ -310,11 +313,6 @@ td {
   background: #dcfce7;
   color: #15803d;
 }
-.role-badge.seguridad {
-  background: #f3f4f6;
-  color: #374151;
-}
-
 .status-dot {
   display: inline-block;
   width: 8px;
@@ -328,12 +326,6 @@ td {
 .status-dot.inactivo {
   background: #ef4444;
 }
-.status-text {
-  text-transform: capitalize;
-  font-size: 0.9rem;
-}
-
-/* Botones y Acciones */
 .btn-primary {
   background: #8daa91;
   color: white;
@@ -342,9 +334,7 @@ td {
   border-radius: 50px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s;
 }
-
 .actions-cell {
   display: flex;
   gap: 8px;
@@ -368,8 +358,6 @@ td {
   background: #fee2e2;
   color: #ef4444;
 }
-
-/* Modal Premium */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -380,7 +368,6 @@ td {
   align-items: center;
   z-index: 100;
 }
-
 .modal {
   background: white;
   padding: 35px;
@@ -388,7 +375,6 @@ td {
   width: 420px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
-
 .modal-header {
   text-align: center;
   margin-bottom: 25px;
@@ -400,7 +386,6 @@ td {
   margin: 8px auto;
   border-radius: 5px;
 }
-
 .spa-form {
   display: flex;
   flex-direction: column;
@@ -413,7 +398,6 @@ td {
   text-transform: uppercase;
   margin-bottom: 5px;
 }
-
 input,
 select {
   width: 100%;
@@ -423,20 +407,17 @@ select {
   background: #fdfdfb;
   box-sizing: border-box;
 }
-
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 20px;
 }
-
 .btn-save {
   background: #8daa91;
   color: white;

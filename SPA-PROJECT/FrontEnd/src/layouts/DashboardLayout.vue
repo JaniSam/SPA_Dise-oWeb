@@ -6,7 +6,7 @@
       <Navbar />
 
       <div class="content">
-        <router-view />
+        <slot />
       </div>
     </div>
   </div>
@@ -25,6 +25,7 @@ export default {
 </script>
 
 <style>
+/* Se mantienen tus estilos originales intactos */
 .layout {
   display: flex;
 }
