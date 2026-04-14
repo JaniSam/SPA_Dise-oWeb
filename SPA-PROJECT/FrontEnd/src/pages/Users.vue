@@ -1,12 +1,12 @@
 <template>
   <div class="users-page">
     <header class="page-header">
-      <div class="header-content">
+      <div>
         <h1>Usuarios del Sistema</h1>
-        <p class="subtitle">Gestión de accesos y roles del personal</p>
+        <p class="subtitle">Gestión de accesos</p>
       </div>
       <button class="btn-primary" @click="openCreateModal">
-        <span class="plus-icon">+</span> Nuevo Usuario
+        + Nuevo Usuario
       </button>
     </header>
 
@@ -19,16 +19,19 @@
             <th>Teléfono</th>
             <th>Rol</th>
             <th>Estado</th>
-            <th class="actions-header">Acciones</th>
+            <th>Acciones</th>
           </tr>
         </thead>
+
         <tbody>
           <tr v-for="user in users" :key="user.id">
-            <td class="user-name">{{ user.nombre }} {{ user.apellido }}</td>
-            <td class="user-email">{{ user.email }}</td>
+            <td class="user-name">
+              {{ user.nombre }} {{ user.apellido }}
+            </td>
+            <td>{{ user.email }}</td>
             <td>{{ user.telefono }}</td>
             <td>
-              <span class="role-badge" :class="getRoleClass(user.rol_id)">
+              <span class="role-badge">
                 {{ getRoleName(user.rol_id) }}
               </span>
             </td>
@@ -37,23 +40,11 @@
                 class="status-dot"
                 :class="user.activo ? 'activo' : 'inactivo'"
               ></span>
-              <span class="status-text">{{
-                user.activo ? "activo" : "inactivo"
-              }}</span>
+              {{ user.activo ? "Activo" : "Inactivo" }}
             </td>
             <td class="actions-cell">
-              <button
-                class="btn-edit"
-                @click="openEditModal(user)"
-                title="Editar"
-              >
-                ✎
-              </button>
-              <button
-                class="btn-delete"
-                @click="openDeleteModal(user)"
-                title="Eliminar"
-              >
+              <button class="btn-edit" @click="openEditModal(user)">✎</button>
+              <button class="btn-delete" @click="openDeleteModal(user)">
                 ✕
               </button>
             </td>
@@ -62,83 +53,67 @@
       </table>
     </div>
 
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <!-- 🔹 MODAL FORM -->
+    <div v-if="showModal" class="modal-overlay">
       <div class="modal">
-        <div class="modal-header">
-          <h2>{{ isEditing ? "Editar Usuario" : "Nuevo Usuario" }}</h2>
-          <div class="header-line"></div>
-        </div>
+        <h2>{{ isEditing ? "Editar Usuario" : "Nuevo Usuario" }}</h2>
 
         <form @submit.prevent="saveUser" class="spa-form">
-          <div class="input-group">
-            <label>Nombre</label>
-            <input v-model="form.nombre" required />
+          <input v-model="form.nombre" placeholder="Nombre" required />
+          <input v-model="form.apellido" placeholder="Apellido" />
+          <input v-model="form.email" placeholder="Email" required />
+          <input v-model="form.telefono" placeholder="Teléfono" />
+          <div class="password-group">
+            <input
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              autocomplete="new-password"
+            />
+
+            <button type="button" class="toggle-btn" @click="togglePassword">
+              {{ showPassword ? "🙈" : "👁" }}
+            </button>
           </div>
-          <div class="input-group">
-            <label>Apellido</label>
-            <input v-model="form.apellido" />
+
+          <div class="password-group">
+            <input
+              v-model="form.confirmPassword"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Confirmar Password"
+            />
           </div>
-          <div class="input-group">
-            <label>Email</label>
-            <input type="email" v-model="form.email" required />
-          </div>
-          <div class="input-group">
-            <label>Teléfono</label>
-            <input v-model="form.telefono" />
-          </div>
-          <div class="input-group">
-            <label>Password</label>
-            <input type="password" v-model="form.password" required />
-          </div>
-          <div class="form-row">
-            <div class="input-group">
-              <label>Rol</label>
-              <select v-model="form.rol_id">
-                <option :value="1">Admin</option>
-                <option :value="2">Recepcionista</option>
-                <option :value="3">Terapeuta</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Estado</label>
-              <select v-model="form.activo">
-                <option :value="true">Activo</option>
-                <option :value="false">Inactivo</option>
-              </select>
-            </div>
-          </div>
+          <select v-model="form.rol_id">
+            <option :value="1">Admin</option>
+            <option :value="2">Recepcionista</option>
+            <option :value="3">Terapeuta</option>
+          </select>
+
+          <select v-model="form.activo">
+            <option :value="true">Activo</option>
+            <option :value="false">Inactivo</option>
+          </select>
+
           <div class="modal-actions">
+            <button type="submit" class="btn-save">
+              {{ isEditing ? "Actualizar" : "Guardar" }}
+            </button>
             <button type="button" class="btn-cancel" @click="closeModal">
               Cancelar
-            </button>
-            <button type="submit" class="btn-save">
-              {{ isEditing ? "Actualizar" : "Guardar Usuario" }}
             </button>
           </div>
         </form>
       </div>
     </div>
 
-    <div
-      v-if="showConfirmModal"
-      class="modal-overlay"
-      @click.self="closeConfirmModal"
-    >
+    <!-- 🔹 MODAL ELIMINAR -->
+    <div v-if="showConfirmModal" class="modal-overlay">
       <div class="modal">
-        <div class="modal-header">
-          <h2>{{ confirmTitle }}</h2>
-          <div class="header-line"></div>
-        </div>
-        <p style="text-align: center; margin: 20px 0">{{ confirmMessage }}</p>
+        <h3>¿Eliminar usuario?</h3>
         <div class="modal-actions">
+          <button class="btn-delete" @click="confirmDelete">Eliminar</button>
           <button class="btn-cancel" @click="closeConfirmModal">
             Cancelar
-          </button>
-          <button
-            :class="confirmType === 'delete' ? 'btn-delete' : 'btn-save'"
-            @click="executeAction"
-          >
-            Confirmar
           </button>
         </div>
       </div>
@@ -153,11 +128,10 @@ export default {
       users: [],
       showModal: false,
       isEditing: false,
+      showPassword: false,
       showConfirmModal: false,
-      confirmType: "",
-      confirmTitle: "",
-      confirmMessage: "",
-      tempUser: null,
+      userToDelete: null,
+
       form: {
         id: null,
         nombre: "",
@@ -170,37 +144,84 @@ export default {
       },
     };
   },
+
   mounted() {
-    // REGLA DE ORO: Bloqueo de seguridad si no es Admin
-    const role = localStorage.getItem("user-role");
-    if (role !== "admin") {
-      alert("Acceso restringido a administradores.");
-      this.$router.push("/calendar");
-      return;
-    }
-    const saved = localStorage.getItem("spa-users");
-    if (saved) this.users = JSON.parse(saved);
+    this.getUsers();
   },
+
   methods: {
-    getRoleName(id) {
-      const roles = { 1: "Admin", 2: "Recepcionista", 3: "Terapeuta" };
-      return roles[id] || "Personal";
+    async getUsers() {
+      const res = await fetch("http://127.0.0.1:8000/api/usuarios");
+      this.users = await res.json();
     },
-    getRoleClass(id) {
-      const classes = { 1: "admin", 2: "recepcionista", 3: "seguridad" };
-      return classes[id] || "";
+
+    togglePassword() {
+      this.showPassword = !this.showPassword;
     },
-    saveUser() {
+
+    async saveUser() {
+      let url = "http://127.0.0.1:8000/api/usuarios";
+      let method = "POST";
+
       if (this.isEditing) {
-        const index = this.users.findIndex((u) => u.id === this.form.id);
-        this.users[index] = { ...this.form };
-      } else {
-        this.form.id = Date.now();
-        this.users.push({ ...this.form });
+        url += "/" + this.form.id;
+        method = "PUT";
       }
-      localStorage.setItem("spa-users", JSON.stringify(this.users));
-      this.closeModal();
+
+      // 🔴 validar contraseñas
+      if (!this.isEditing || this.form.password) {
+        if (this.form.password !== this.form.confirmPassword) {
+          alert("Las contraseñas no coinciden");
+          return;
+        }
+      }
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json" // 🔥 clave
+          },
+          body: JSON.stringify(this.form),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // 🔴 ERROR DE VALIDACIÓN (email duplicado)
+          if (data.errors && data.errors.email) {
+            alert("El email ya está registrado");
+          } else {
+            alert("Error al guardar");
+          }
+          return;
+        }
+
+        this.getUsers();
+        this.closeModal();
+
+      } catch (error) {
+        console.error(error);
+        alert("Error de conexión con el servidor");
+      }
     },
+
+    openDeleteModal(user) {
+      this.userToDelete = user;
+      this.showConfirmModal = true;
+    },
+
+    async confirmDelete() {
+      await fetch(
+        `http://127.0.0.1:8000/api/usuarios/${this.userToDelete.id}`,
+        { method: "DELETE" }
+      );
+
+      this.getUsers();
+      this.closeConfirmModal();
+    },
+
     openCreateModal() {
       this.isEditing = false;
       this.form = {
@@ -210,41 +231,56 @@ export default {
         email: "",
         telefono: "",
         password: "",
+        confirmPassword: "",
         rol_id: 2,
         activo: true,
       };
       this.showModal = true;
     },
+
     openEditModal(user) {
       this.isEditing = true;
-      this.form = { ...user };
+      this.form = { ...user, password: "" };
       this.showModal = true;
     },
-    openDeleteModal(user) {
-      this.tempUser = user;
-      this.confirmType = "delete";
-      this.confirmTitle = "Confirmar eliminación";
-      this.confirmMessage = `¿Eliminar a ${user.nombre}?`;
-      this.showConfirmModal = true;
-    },
-    executeAction() {
-      if (this.confirmType === "delete") {
-        this.users = this.users.filter((u) => u.id !== this.tempUser.id);
-        localStorage.setItem("spa-users", JSON.stringify(this.users));
-      }
-      this.closeConfirmModal();
-    },
+
     closeModal() {
       this.showModal = false;
     },
+
     closeConfirmModal() {
       this.showConfirmModal = false;
+    },
+
+    getRoleName(id) {
+      const roles = { 1: "Admin", 2: "Recepcionista", 3: "Terapeuta" };
+      return roles[id];
     },
   },
 };
 </script>
 
 <style scoped>
+.password-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-group input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #8daa91;
+}
 .users-page {
   padding: 40px;
   background-color: #f9f7f2;

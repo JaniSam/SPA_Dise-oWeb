@@ -16,12 +16,19 @@ class UsuarioController extends Controller
     // ➕ CREAR USUARIO
     public function store(Request $request)
     {
+        // 🔴 VALIDACIÓN
+        $request->validate([
+            'email' => 'required|email|unique:usuarios,email',
+            'nombre' => 'required',
+            'password' => 'required|min:6'
+        ]);
+
         $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'email' => $request->email,
             'telefono' => $request->telefono,
-            'password' => bcrypt($request->password),
+            'password' => $request->password ? bcrypt($request->password) : null,
             'rol_id' => $request->rol_id,
             'activo' => true
         ]);
@@ -40,11 +47,23 @@ class UsuarioController extends Controller
     {
         $usuario = Usuario::findOrFail($id);
 
-        $usuario->update($request->all());
+        $request->validate([
+            'email' => 'required|email|unique:usuarios,email,' . $id
+        ]);
+
+        $data = $request->all();
+
+        if (!empty($request->password)) {
+            $data['password'] = bcrypt($request->password);
+        } else {
+            unset($data['password']);
+        }
+
+        $usuario->update($data);
 
         return response()->json($usuario, 200);
     }
-
+    
     // ❌ ELIMINAR
     public function destroy($id)
     {
