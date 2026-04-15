@@ -23,13 +23,13 @@ export const api = {
     return res.json();
   },
 
-  // OBTENER UNO
+  // Listar Ususario
   async getUsuario(id) {
     const res = await fetch(`${BASE_URL}/usuarios/${id}`);
     return res.json();
   },
 
-  // ACTUALIZAR
+  // ACTUALIZAR Usuario
   async updateUsuario(id, data) {
     const res = await fetch(`${BASE_URL}/usuarios/${id}`, {
       method: "PUT",
@@ -43,7 +43,7 @@ export const api = {
     return res.json();
   },
 
-  // ELIMINAR
+  // ELIMINAR Usuario
   async deleteUsuario(id) {
     const res = await fetch(`${BASE_URL}/usuarios/${id}`, {
       method: "DELETE"

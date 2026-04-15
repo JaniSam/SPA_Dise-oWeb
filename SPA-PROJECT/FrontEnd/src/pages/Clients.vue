@@ -9,7 +9,6 @@
         <span class="plus-icon">+</span> Nuevo Cliente
       </button>
     </header>
-
     <div class="table-container">
       <table>
         <thead>
