@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Servicio;
 use Illuminate\Http\Request;
 
-class ServicioController extends Controller
+abstract class ServicioController extends Controller
 {
     // 📌 Listar todos los servicios
     public function index()
