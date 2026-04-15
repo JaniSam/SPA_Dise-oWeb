@@ -122,6 +122,7 @@
 </template>
 
 <script>
+import { api } from "../services/api";
 export default {
   data() {
     return {
@@ -151,8 +152,7 @@ export default {
 
   methods: {
     async getUsers() {
-      const res = await fetch("http://127.0.0.1:8000/api/usuarios");
-      this.users = await res.json();
+      this.users = await api.getUsuarios();
     },
 
     togglePassword() {
@@ -160,15 +160,8 @@ export default {
     },
 
     async saveUser() {
-      let url = "http://127.0.0.1:8000/api/usuarios";
-      let method = "POST";
 
-      if (this.isEditing) {
-        url += "/" + this.form.id;
-        method = "PUT";
-      }
-
-      // 🔴 validar contraseñas
+      // validar contraseñas
       if (!this.isEditing || this.form.password) {
         if (this.form.password !== this.form.confirmPassword) {
           alert("Las contraseñas no coinciden");
@@ -177,25 +170,12 @@ export default {
       }
 
       try {
-        const res = await fetch(url, {
-          method,
-          headers: { 
-            "Content-Type": "application/json",
-            "Accept": "application/json" // 🔥 clave
-          },
-          body: JSON.stringify(this.form),
-        });
+        let data;
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          // 🔴 ERROR DE VALIDACIÓN (email duplicado)
-          if (data.errors && data.errors.email) {
-            alert("El email ya está registrado");
-          } else {
-            alert("Error al guardar");
-          }
-          return;
+        if (this.isEditing) {
+          data = await api.updateUsuario(this.form.id, this.form);
+        } else {
+          data = await api.createUsuario(this.form);
         }
 
         this.getUsers();
@@ -213,11 +193,7 @@ export default {
     },
 
     async confirmDelete() {
-      await fetch(
-        `http://127.0.0.1:8000/api/usuarios/${this.userToDelete.id}`,
-        { method: "DELETE" }
-      );
-
+      await api.deleteUsuario(this.userToDelete.id);
       this.getUsers();
       this.closeConfirmModal();
     },

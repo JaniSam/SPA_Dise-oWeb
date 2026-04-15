@@ -172,6 +172,7 @@ Se deben abrir DOS terminales:
     🔹 Terminal 2 - Frontend
         cd SPA_Dise-oWeb/SPA-PROJECT/frontend
             npm run dev
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass // por si da error 
 
         URL:    http://localhost:5173
 

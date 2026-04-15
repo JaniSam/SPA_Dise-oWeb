@@ -1,7 +1,57 @@
 // src/services/api.js
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+const BASE_URL = "http://127.0.0.1:8000/api";
 
 export const api = {
+  // OBTENER USUARIOS
+  async getUsuarios() {
+    const res = await fetch(`${BASE_URL}/usuarios`);
+    return res.json();
+  },
+
+  // CREAR USUARIO
+  async createUsuario(data) {
+    const res = await fetch(`${BASE_URL}/usuarios`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    return res.json();
+  },
+
+  // OBTENER UNO
+  async getUsuario(id) {
+    const res = await fetch(`${BASE_URL}/usuarios/${id}`);
+    return res.json();
+  },
+
+  // ACTUALIZAR
+  async updateUsuario(id, data) {
+    const res = await fetch(`${BASE_URL}/usuarios/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    return res.json();
+  },
+
+  // ELIMINAR
+  async deleteUsuario(id) {
+    const res = await fetch(`${BASE_URL}/usuarios/${id}`, {
+      method: "DELETE"
+    });
+
+    return res.json();
+  },
+
   // Obtener Citas
   async getEvents() {
     await delay(500); // Simula latencia de red
