@@ -16,8 +16,8 @@
         </thead>
         <tbody>
           <tr v-for="service in services" :key="service.id">
-            <td class="service-name">{{ service.name }}</td>
-            <td class="service-price">{{ formatMoney(service.price) }}</td>
+            <td>{{ service.nombre }}</td>
+            <td>{{ formatMoney(service.precio) }}</td>
             <td>
               <button @click="deleteService(service.id)" class="btn-delete-row">
                 Eliminar

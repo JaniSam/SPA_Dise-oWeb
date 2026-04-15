@@ -59,10 +59,10 @@
         <h2>{{ isEditing ? "Editar Usuario" : "Nuevo Usuario" }}</h2>
 
         <form @submit.prevent="saveUser" class="spa-form">
-          <input v-model="form.nombre" placeholder="Nombre" required />
-          <input v-model="form.apellido" placeholder="Apellido" />
-          <input v-model="form.email" placeholder="Email" required />
-          <input v-model="form.telefono" placeholder="Teléfono" />
+          <input v-model="form.nombre" placeholder="Nombre" required autocomplete="Nombre" />
+          <input v-model="form.apellido" placeholder="Apellido" autocomplete="Apellido" />
+          <input v-model="form.email" placeholder="Email" required autocomplete="Email"/>
+          <input v-model="form.telefono" placeholder="Teléfono" autocomplete="Telefono"/>
           <div class="password-group">
             <input
               v-model="form.password"
@@ -72,7 +72,7 @@
             />
 
             <button type="button" class="toggle-btn" @click="togglePassword">
-              {{ showPassword ? "🙈" : "👁" }}
+              {{ showPassword ? "👁" : "👁" }}
             </button>
           </div>
 
@@ -81,6 +81,7 @@
               v-model="form.confirmPassword"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Confirmar Password"
+              autocomplete="new-password"
             />
           </div>
           <select v-model="form.rol_id">
