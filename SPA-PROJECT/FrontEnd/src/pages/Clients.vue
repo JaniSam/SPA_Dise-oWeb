@@ -14,36 +14,28 @@
         <thead>
           <tr>
             <th>Nombre</th>
+            <th>Apellido</th>
             <th>Email</th>
             <th>Teléfono</th>
-            <th>Documento</th>
+            <th>Estado</th>
             <th class="actions-header">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="client in clients" :key="client.id">
-            <td class="client-name">{{ client.name }}</td>
+            <td class="client-name">{{ client.nombre }}</td>
+            <td>{{ client.apellido }}</td>
             <td>{{ client.email }}</td>
-            <td>{{ client.phone }}</td>
+            <td>{{ client.telefono }}</td>
             <td>
-              <span class="doc-badge">{{ client.document }}</span>
+              <span :class="['status-badge', client.activo ? 'active' : 'inactive']">
+                {{ client.activo ? 'Activo' : 'Inactivo' }}
+              </span>
             </td>
             <td class="actions-cell">
-              <button
-                class="btn-edit"
-                @click="openEditModal(client)"
-                title="Editar"
-              >
-                ✎
-              </button>
-              <button
-                class="btn-delete"
-                @click="deleteClient(client.id)"
-                title="Eliminar"
-              >
-                ✕
-              </button>
+              <button class="btn-edit" @click="openEditModal(client)" title="Editar">✎</button>
+              <button class="btn-delete" @click="deleteClient(client.id)" title="Eliminar">✕</button>
             </td>
           </tr>
         </tbody>
@@ -58,47 +50,44 @@
         </div>
 
         <form @submit.prevent="saveClient" class="spa-form">
-          <div class="input-group">
-            <label>Nombre Completo</label>
-            <input
-              type="text"
-              placeholder="Ej: Juan Pérez"
-              v-model="form.name"
-              required
-            />
+          <div class="form-row">
+            <div class="input-group">
+              <label>Nombre</label>
+              <input type="text" v-model="form.nombre" required />
+            </div>
+            <div class="input-group">
+              <label>Apellido</label>
+              <input type="text" v-model="form.apellido" />
+            </div>
           </div>
 
           <div class="input-group">
             <label>Correo Electrónico</label>
-            <input
-              type="email"
-              placeholder="email@ejemplo.com"
-              v-model="form.email"
-            />
+            <input type="email" v-model="form.email" required />
           </div>
 
           <div class="form-row">
             <div class="input-group">
               <label>Teléfono</label>
-              <input type="text" placeholder="0981..." v-model="form.phone" />
+              <input type="text" v-model="form.telefono" />
             </div>
             <div class="input-group">
-              <label>Documento</label>
-              <input
-                type="text"
-                placeholder="C.I. / RUC"
-                v-model="form.document"
-              />
+              <label>Estado</label>
+              <select v-model="form.activo" class="spa-select">
+                <option :value="true">Activo</option>
+                <option :value="false">Inactivo</option>
+              </select>
             </div>
           </div>
 
+          <div v-if="!isEditing" class="input-group">
+            <label>Password</label>
+            <input type="password" v-model="form.password" required />
+          </div>
+
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" @click="closeModal">
-              Cancelar
-            </button>
-            <button type="submit" class="btn-save">
-              {{ isEditing ? "Actualizar" : "Guardar Cliente" }}
-            </button>
+            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="submit" class="btn-save">{{ isEditing ? "Actualizar" : "Guardar" }}</button>
           </div>
         </form>
       </div>
@@ -111,30 +100,28 @@ export default {
   data() {
     return {
       clients: [
-        {
-          id: 1,
-          name: "Juan Pérez",
-          email: "juan@email.com",
-          phone: "0981123456",
-          document: "1234567",
-        },
-        {
-          id: 2,
-          name: "Ana Gómez",
-          email: "ana@email.com",
-          phone: "097654321",
-          document: "7654321",
-        },
+        // Ejemplo de cómo se verían los datos de tu tabla
+        { id: 1, nombre: "Juan", apellido: "Pérez", email: "juan@mail.com", telefono: "0981123", activo: true, rol_id: 4 }
       ],
       showModal: false,
       isEditing: false,
-      form: { id: null, name: "", email: "", phone: "", document: "" },
+      // Estructura idéntica a tu tabla 'usuarios'
+      form: { 
+        id: null, 
+        nombre: "", 
+        apellido: "", 
+        email: "", 
+        telefono: "", 
+        password: "",
+        activo: true,
+        rol_id: 4 // Siempre 4 por ser Clientes
+      },
     };
   },
   methods: {
     openCreateModal() {
       this.isEditing = false;
-      this.form = { id: null, name: "", email: "", phone: "", document: "" };
+      this.form = { id: null, nombre: "", apellido: "", email: "", telefono: "", password: "", activo: true, rol_id: 4 };
       this.showModal = true;
     },
     openEditModal(client) {
@@ -147,7 +134,7 @@ export default {
         const index = this.clients.findIndex((c) => c.id === this.form.id);
         this.clients[index] = { ...this.form };
       } else {
-        this.form.id = Date.now();
+        this.form.id = Date.now(); // Simulación de ID serial
         this.clients.push({ ...this.form });
       }
       this.closeModal();
@@ -158,9 +145,22 @@ export default {
     closeModal() {
       this.showModal = false;
     },
+    saveClient() {
+    if (this.isEditing) {
+      const index = this.clients.findIndex((c) => c.id === this.form.id);
+      if (index !== -1) {
+
+        this.clients.splice(index, 1, { ...this.form });
+      }
+      } else {
+        this.form.id = Date.now(); 
+        this.clients.push({ ...this.form });
+      }
+  this.closeModal();
+}
   },
 };
-</script>
+
 
 <style scoped>
 /* Estructura y Fondo */
