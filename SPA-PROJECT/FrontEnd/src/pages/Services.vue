@@ -62,8 +62,12 @@ import { apiServicios } from "../services/ApiServices";
 const services = ref([]);
 const isModalOpen = ref(false);
 const isLoading = ref(false); // Opcional: para mostrar un spinner
-const newService = ref({ servicio: "", precio: 0 }); // Cambié 'name' por 'servicio' para que coincida con tu DB
-
+const newService = ref({ 
+  nombre: "", 
+  precio: 0, 
+  duracion_minutos: 30, // Valor por defecto o añade un input en el modal
+  descripcion: "" 
+});
 // 1. Cargar datos desde la API al montar el componente
 onMounted(async () => {
   await fetchServices();
