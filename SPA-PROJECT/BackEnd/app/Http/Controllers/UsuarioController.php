@@ -8,8 +8,12 @@ use App\Models\Usuario;
 class UsuarioController extends Controller
 {
     // 📄 LISTAR USUARIOS
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->rol_id) {
+            return Usuario::where('rol_id', $request->rol_id)->get();
+        }
+
         return Usuario::all();
     }
 
@@ -71,4 +75,6 @@ class UsuarioController extends Controller
 
         return response()->json(['mensaje' => 'Usuario eliminado']);
     }
+    
 }
+

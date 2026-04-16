@@ -7,4 +7,3 @@ use App\Http\Controllers\ClienteController;
 
 Route::apiResource('usuarios', UsuarioController::class);
 Route::apiResource('servicios', ServicioController::class);
-Route::apiResource('clientes', [ClienteController::class, 'store']);
