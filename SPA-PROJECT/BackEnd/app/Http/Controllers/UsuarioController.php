@@ -9,9 +9,9 @@ class UsuarioController extends Controller
 {
     // 📄 LISTAR USUARIOS
     public function index()
-    {
-        return Usuario::all();
-    }
+{
+    return Usuario::where('rol_id', 4)->get();
+}
 
     // ➕ CREAR USUARIO
     public function store(Request $request)
@@ -24,14 +24,14 @@ class UsuarioController extends Controller
         ]);
 
         $usuario = Usuario::create([
-            'nombre' => $request->nombre,
-            'apellido' => $request->apellido,
-            'email' => $request->email,
-            'telefono' => $request->telefono,
-            'password' => $request->password ? bcrypt($request->password) : null,
-            'rol_id' => $request->rol_id,
-            'activo' => true
-        ]);
+    'nombre'    => $request->nombre,
+    'apellido'  => $request->apellido,
+    'email'     => $request->email,
+    'telefono'  => $request->telefono,
+    'password'  => $request->password ? bcrypt($request->password) : null,
+    'rol_id'    => $request->rol_id,
+    'activo'    => true,
+]);
 
         return response()->json($usuario, 201);
     }
