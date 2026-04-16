@@ -39,4 +39,45 @@ class LoginController extends Controller
             ], 500);
         }
     }
+    public function register(Request $request)
+{
+    try {
+        $request->validate([
+            'nombre'   => 'required|string|max:50',
+            'apellido' => 'nullable|string|max:50',
+            'email'    => 'required|email|unique:usuarios,email',
+            'telefono' => 'nullable|string|max:20',
+            'password' => 'required|min:6',
+            'rol_id'   => 'required|integer|exists:roles,id',
+        ]);
+
+        $usuario = Usuario::create([
+            'nombre'   => $request->nombre,
+            'apellido' => $request->apellido,
+            'email'    => $request->email,
+            'telefono' => $request->telefono,
+            'password' => bcrypt($request->password),
+            'rol_id'   => $request->rol_id,
+            'activo'   => true,
+        ]);
+
+        $token = $usuario->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user'  => $usuario
+        ], 201);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'error'  => 'Error de validación',
+            'fields' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error'   => 'Error en el servidor',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }

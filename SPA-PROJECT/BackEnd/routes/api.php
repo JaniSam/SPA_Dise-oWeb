@@ -7,5 +7,6 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\LoginController; 
 
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/register', [LoginController::class, 'register']);
 Route::apiResource('usuarios', UsuarioController::class);
 Route::apiResource('servicios', ServicioController::class);

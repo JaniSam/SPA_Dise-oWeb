@@ -18,6 +18,18 @@ export const api = {
       return res.json();
     },
   
+    async register(data) {
+  const res = await fetch(`http://127.0.0.1:8000/api/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+},
+
   // OBTENER USUARIOS
   async getUsuarios() {
     const res = await fetch(`${BASE_URL}/usuarios`);
