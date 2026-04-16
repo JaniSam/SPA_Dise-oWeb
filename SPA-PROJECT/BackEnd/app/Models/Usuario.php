@@ -2,23 +2,28 @@
 
 namespace App\Models;
 
-// Cambiamos el uso de Model por Authenticatable
 use Illuminate\Foundation\Auth\User as Authenticatable;
-//use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Authenticatable
 {
-    ////use HasApiTokens; // Importante para la comunicación con Vue
+    use HasApiTokens, Notifiable;
 
     protected $table = 'usuarios';
-    public $timestamps = false; 
 
     protected $fillable = [
-        'nombre', 'apellido', 'email', 'telefono', 'password', 'rol_id', 'activo'
+        'nombre',
+        'apellido',
+        'email',
+        'telefono',
+        'password',
+        'rol_id',
+        'activo',
     ];
 
     protected $hidden = [
-        'password', // Para que la contraseña no viaje al frontend
+        'password',
+        'remember_token',
     ];
 }

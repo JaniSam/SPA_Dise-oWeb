@@ -4,78 +4,87 @@
       <div class="spa-brand">
         <span class="icon-leaf">🌿</span>
         <h1>SPA</h1>
-        <p>Sistema de Recepción</p>
+        <p>BIENESTAR & ARMONÍA</p>
       </div>
 
       <form @submit.prevent="handleLogin">
         <div class="input-spa-group">
-          <label for="username">Usuario</label>
-          <input
-            type="text"
-            id="username"
-            v-model="username"
-            placeholder="Usuario"
-            required
+          <label>Correo Electrónico</label>
+          <input 
+            v-model="email" 
+            type="email" 
+            placeholder="admin@ejemplo.com" 
+            required 
           />
         </div>
 
         <div class="input-spa-group">
-          <label for="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="••••••••"
-            required
+          <label>Contraseña</label>
+          <input 
+            v-model="password" 
+            type="password" 
+            placeholder="••••••••" 
+            required 
           />
         </div>
 
         <transition name="fade">
-          <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
+          <p v-if="error" class="error-text">{{ error }}</p>
         </transition>
 
-        <button type="submit" class="btn-spa-login">Ingresar</button>
+        <button type="submit" class="btn-spa-login" :disabled="loading">
+          {{ loading ? 'Iniciando sesión...' : 'INGRESAR' }}
+        </button>
       </form>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      username: "",
-      password: "",
-      errorMessage: "",
-    };
-  },
-  methods: {
-    handleLogin() {
-      // Simulación de validación
-      if (
-        this.username === "admin" ||
-        (this.username === "rodrigo" && this.password === "1234")
-      ) {
-        localStorage.setItem("user-authenticated", "true");
-        localStorage.setItem("user-name", this.username);
-        // Asignamos un rol simple basado en el nombre de usuario
-        const role =
-          this.username.toLowerCase() === "admin" ? "admin" : "recepcionista";
-        localStorage.setItem("user-role", role);
-        this.$router.push("/dashboard");
-      } else {
-        this.errorMessage = "Credenciales incorrectas. Intente de nuevo.";
-        // Limpiar mensaje después de 3 segundos
-        setTimeout(() => {
-          this.errorMessage = "";
-        }, 3000);
-      }
-    },
-  },
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { api } from "../services/ApiUser"; // Importación corregida
+
+const email = ref("");
+const password = ref("");
+const error = ref("");
+const loading = ref(false);
+const router = useRouter();
+
+const handleLogin = async () => {
+  loading.value = true;
+  error.value = "";
+  
+  try {
+    // Usamos el método login de tu ApiUser.js
+    const data = await api.login({
+      email: email.value,
+      password: password.value,
+    });
+
+    if (data.token) {
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("user", JSON.stringify(data.user))
+      
+      // ← AGREGA ESTAS DOS LÍNEAS:
+      localStorage.setItem("user-authenticated", "true")
+      localStorage.setItem("user-role", data.user.rol_id === 1 ? "admin" : "user")
+      
+      router.push("/dashboard")
+    } else {
+      // Aquí capturamos el "Credenciales inválidas" que viste en Thunder Client
+      error.value = data.error || "Correo o contraseña incorrectos";
+    }
+  } catch (err) {
+    error.value = "Error de conexión con el servidor";
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 
 <style scoped>
+/* Restaurado tu diseño SPA original */
 .login-spa-container {
   display: flex;
   justify-content: center;
@@ -92,12 +101,20 @@ export default {
   width: 360px;
   text-align: center;
 }
+.spa-brand .icon-leaf {
+  font-size: 2rem;
+}
 .spa-brand h1 {
   font-size: 2.2rem;
   font-weight: 300;
   color: #3e7b8c;
   letter-spacing: 2px;
   margin: 0;
+}
+.spa-brand p {
+  color: #a3a3a3;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
 }
 .input-spa-group {
   margin-bottom: 1.5rem;
@@ -117,6 +134,7 @@ input {
   border: 1px solid #e0e0e0;
   background-color: #fafafa;
   box-sizing: border-box;
+  font-size: 0.9rem;
 }
 input:focus {
   outline: none;
@@ -137,9 +155,15 @@ input:focus {
   color: white;
   font-weight: 600;
   cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
 }
-.btn-spa-login:hover {
+.btn-spa-login:hover:not(:disabled) {
   background-color: #2c5864;
+}
+.btn-spa-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .fade-enter-active,
 .fade-leave-active {

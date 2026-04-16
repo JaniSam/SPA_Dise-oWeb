@@ -4,6 +4,20 @@ const BASE_URL = "http://127.0.0.1:8000/api";
 
 export const api = {
   
+  async login(credentials) {
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+      // Devolvemos el JSON sin importar si es 200, 401 o 403
+      // El componente Login.vue se encarga de leer data.error
+      return res.json();
+    },
+  
   // OBTENER USUARIOS
   async getUsuarios() {
     const res = await fetch(`${BASE_URL}/usuarios`);
