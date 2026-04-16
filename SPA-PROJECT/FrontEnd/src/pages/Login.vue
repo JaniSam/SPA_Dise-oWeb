@@ -59,16 +59,7 @@
           <label>Contraseña</label>
           <input v-model="reg.password" type="password" placeholder="••••••••" required />
         </div>
-        <div class="input-spa-group">
-          <label>Rol</label>
-          <select v-model="reg.rol_id" class="spa-select" required>
-            <option value="">-- Seleccionar --</option>
-            <option :value="1">Administrador</option>
-            <option :value="2">Recepcionista</option>
-            <option :value="3">Terapeuta</option>
-            <option :value="4">Cliente</option>
-          </select>
-        </div>
+        
         <!-- DESPUÉS - dos transition separadas -->
         <transition name="fade">
           <p v-if="regError" class="error-text">{{ regError }}</p>
@@ -133,7 +124,7 @@ const handleRegister = async () => {
   regError.value   = "";
   regSuccess.value = "";
   try {
-    const data = await api.register({ ...reg, rol_id: Number(reg.rol_id) });
+    const data = await api.register({ ...reg });
     if (data.token) {
       regSuccess.value = "¡Cuenta creada! Redirigiendo...";
       localStorage.setItem("token", data.token);
