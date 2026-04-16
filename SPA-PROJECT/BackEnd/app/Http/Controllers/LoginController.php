@@ -46,18 +46,19 @@ class LoginController extends Controller
                 'nombre'   => 'required|string|max:50',
                 'apellido' => 'nullable|string|max:50',
                 'email'    => 'required|email|unique:usuarios,email',
+                'cedula'   => 'required|string|unique:usuarios,cedula', // <-- Validación nueva
                 'telefono' => 'nullable|string|max:20',
                 'password' => 'required|min:6',
-                // ← rol_id ya no se valida, lo asignamos nosotros
             ]);
 
             $usuario = Usuario::create([
                 'nombre'   => $request->nombre,
                 'apellido' => $request->apellido,
                 'email'    => $request->email,
+                'cedula'   => $request->cedula, // <-- Guardar en la BD
                 'telefono' => $request->telefono,
                 'password' => bcrypt($request->password),
-                'rol_id'   => 4, // ← siempre Cliente al registrarse
+                'rol_id'   => 4, 
                 'activo'   => true,
             ]);
 

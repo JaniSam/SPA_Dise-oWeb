@@ -56,6 +56,10 @@
           <input v-model="reg.telefono" type="text" placeholder="0981234567" />
         </div>
         <div class="input-spa-group">
+          <label>Cédula de Identidad</label>
+          <input v-model="reg.cedula" type="text" placeholder="1234567" required />
+        </div>
+        <div class="input-spa-group">
           <label>Contraseña</label>
           <input v-model="reg.password" type="password" placeholder="••••••••" required />
         </div>
@@ -113,7 +117,7 @@ const handleLogin = async () => {
 // --- REGISTRO ---
 const reg = reactive({
   nombre: "", apellido: "", email: "",
-  telefono: "", password: "", rol_id: ""
+  telefono: "", cedula: "", password: "", rol_id: ""
 });
 const regError   = ref("");
 const regSuccess = ref("");
