@@ -17,8 +17,10 @@ class ServicioController extends Controller
     public function store(Request $request)
     {
         $validado = $request->validate([
-            'servicio' => 'required|string|max:100',
-            'precio' => 'required|numeric'
+            'nombre' => 'required|string|max:100',
+            'precio' => 'required|numeric',
+            'duracion_minutos' => 'required|integer|min:11', // El check en tu SQL dice > 10
+            'descripcion' => 'nullable|string'
         ]);
 
         $servicio = Servicio::create($validado);
