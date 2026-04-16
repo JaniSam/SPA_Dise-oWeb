@@ -280,3 +280,10 @@ Se deben abrir DOS terminales:
         ✅ Así, develop siempre tendrá la última versión de todos los cambios integrados.
 
             git merge develop -m "merge develop into backend/usuarios"//hacer merge de develop en tu rama sin abrir el editor
+
+# Al realizar cambios donde de aplican nuevas dependendias luego de realizar pull, ejecutar
+    //Backend
+    composer install
+
+    //Frontend (si agregaste algo con npm)
+    npm install

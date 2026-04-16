@@ -11,6 +11,10 @@ class Usuario extends Authenticatable
     use HasApiTokens, Notifiable;
 
     protected $table = 'usuarios';
+    
+    // ← ESTAS DOS LÍNEAS SON LA CLAVE
+    public $timestamps = false;
+    const CREATED_AT = 'creado_en';
 
     protected $fillable = [
         'nombre',
