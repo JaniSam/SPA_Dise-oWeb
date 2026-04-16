@@ -9,4 +9,3 @@ use App\Http\Controllers\LoginController;
 Route::post('/login', [LoginController::class, 'login']);
 Route::apiResource('usuarios', UsuarioController::class);
 Route::apiResource('servicios', ServicioController::class);
-Route::apiResource('clientes', [ClienteController::class, 'store']);

@@ -96,16 +96,14 @@
 </template>
 
 <script>
+import { api } from "../services/ApiUser"; // 👈 IMPORTANTE
+
 export default {
   data() {
     return {
-      clients: [
-        // Ejemplo de cómo se verían los datos de tu tabla
-        { id: 1, nombre: "Juan", apellido: "Pérez", email: "juan@mail.com", telefono: "0981123", activo: true, rol_id: 4 }
-      ],
+      clients: [],
       showModal: false,
       isEditing: false,
-      // Estructura idéntica a tu tabla 'usuarios'
       form: { 
         id: null, 
         nombre: "", 
@@ -114,50 +112,76 @@ export default {
         telefono: "", 
         password: "",
         activo: true,
-        rol_id: 4 // Siempre 4 por ser Clientes
+        rol_id: 4
       },
     };
   },
+
+  async mounted() {
+    this.loadClients(); // 👈 CARGA AUTOMÁTICA
+  },
+
   methods: {
+
+    // 🔥 CARGAR CLIENTES DESDE BACKEND
+    async loadClients() {
+      try {
+        const data = await api.getClientes();
+        this.clients = data;
+      } catch (error) {
+        console.error("Error cargando clientes:", error);
+      }
+    },
+
     openCreateModal() {
       this.isEditing = false;
-      this.form = { id: null, nombre: "", apellido: "", email: "", telefono: "", password: "", activo: true, rol_id: 4 };
+      this.form = { 
+        id: null, nombre: "", apellido: "", email: "", telefono: "", password: "", activo: true, rol_id: 4 
+      };
       this.showModal = true;
     },
+
     openEditModal(client) {
       this.isEditing = true;
       this.form = { ...client };
       this.showModal = true;
     },
-    saveClient() {
-      if (this.isEditing) {
-        const index = this.clients.findIndex((c) => c.id === this.form.id);
-        this.clients[index] = { ...this.form };
-      } else {
-        this.form.id = Date.now(); // Simulación de ID serial
-        this.clients.push({ ...this.form });
+
+    // 🔥 GUARDAR EN BACKEND
+    async saveClient() {
+      try {
+        if (this.isEditing) {
+          await api.updateUsuario(this.form.id, this.form);
+        } else {
+          const dataToSend = {
+            ...this.form,
+            password: "123456" // 👈 FORZADO SIEMPRE
+          };
+
+          await api.createUsuario(dataToSend);
+        }
+
+        await this.loadClients();
+        this.closeModal();
+
+      } catch (error) {
+        console.error("Error guardando cliente:", error);
       }
-      this.closeModal();
     },
-    deleteClient(id) {
-      this.clients = this.clients.filter((c) => c.id !== id);
+
+    // 🔥 ELIMINAR REAL
+    async deleteClient(id) {
+      try {
+        await api.deleteUsuario(id);
+        this.loadClients();
+      } catch (error) {
+        console.error("Error eliminando:", error);
+      }
     },
+
     closeModal() {
       this.showModal = false;
-    },
-    saveClient() {
-    if (this.isEditing) {
-      const index = this.clients.findIndex((c) => c.id === this.form.id);
-      if (index !== -1) {
-
-        this.clients.splice(index, 1, { ...this.form });
-      }
-      } else {
-        this.form.id = Date.now(); 
-        this.clients.push({ ...this.form });
-      }
-  this.closeModal();
-}
+    }
   },
 };
 </script>

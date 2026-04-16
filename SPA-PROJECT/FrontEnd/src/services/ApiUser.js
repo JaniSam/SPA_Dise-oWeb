@@ -3,9 +3,17 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 const BASE_URL = "http://127.0.0.1:8000/api";
 
 export const api = {
+  
   // OBTENER USUARIOS
   async getUsuarios() {
     const res = await fetch(`${BASE_URL}/usuarios`);
+    return res.json();
+    
+  },
+  
+  // OBTENER SOLO CLIENTES (rol_id = 4)
+  async getClientes() {
+    const res = await fetch(`${BASE_URL}/usuarios?rol_id=4`);
     return res.json();
   },
 

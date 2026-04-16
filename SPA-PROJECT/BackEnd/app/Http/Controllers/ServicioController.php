@@ -2,94 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Servicio;
+use Illuminate\Http\Request;
 
- class ServicioController extends Controller
+class ServicioController extends Controller
 {
-    /**
-     * Mostrar todos los servicios
-     */
+    // GET /api/servicios
     public function index()
     {
-        return response()->json(Servicio::all());
+        return response()->json(Servicio::all(), 200);
     }
 
-    /**
-     * Crear un nuevo servicio
-     */
+    // POST /api/servicios
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'precio' => 'required|numeric'
+        $validado = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'precio' => 'required|numeric',
+            'duracion_minutos' => 'required|integer|min:11', // El check en tu SQL dice > 10
+            'descripcion' => 'nullable|string'
         ]);
 
-        $servicio = Servicio::create([
-            'nombre' => $request->nombre,
-            'precio' => $request->precio
-        ]);
-
-        return response()->json([
-            'message' => 'Servicio creado correctamente',
-            'data' => $servicio
-        ], 201);
+        $servicio = Servicio::create($validado);
+        return response()->json($servicio, 201);
     }
 
-    /**
-     * Mostrar un servicio específico
-     */
-    public function show($id)
+    // GET /api/servicios/{id}
+    public function show(Servicio $servicio)
     {
-        $servicio = Servicio::find($id);
-
-        if (!$servicio) {
-            return response()->json([
-                'message' => 'Servicio no encontrado'
-            ], 404);
-        }
-
-        return response()->json($servicio);
+        return $servicio;
     }
 
-    /**
-     * Actualizar un servicio
-     */
-    public function update(Request $request, $id)
+    // PUT /api/servicios/{id}
+    public function update(Request $request, Servicio $servicio)
     {
-        $servicio = Servicio::find($id);
-
-        if (!$servicio) {
-            return response()->json([
-                'message' => 'Servicio no encontrado'
-            ], 404);
-        }
-
-        $servicio->update($request->only(['nombre', 'precio']));
-
-        return response()->json([
-            'message' => 'Servicio actualizado correctamente',
-            'data' => $servicio
-        ]);
+        $servicio->update($request->all());
+        return response()->json($servicio, 200);
     }
 
-    /**
-     * Eliminar un servicio
-     */
-    public function destroy($id)
+    // DELETE /api/servicios/{id}
+    public function destroy(Servicio $servicio)
     {
-        $servicio = Servicio::find($id);
-
-        if (!$servicio) {
-            return response()->json([
-                'message' => 'Servicio no encontrado'
-            ], 404);
-        }
-
         $servicio->delete();
-
-        return response()->json([
-            'message' => 'Servicio eliminado correctamente'
-        ]);
+        return response()->json(null, 204);
     }
 }

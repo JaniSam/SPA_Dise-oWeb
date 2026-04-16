@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import { api } from "../services/api";
+import { api } from "../services/ApiUser";
 export default {
   data() {
     return {

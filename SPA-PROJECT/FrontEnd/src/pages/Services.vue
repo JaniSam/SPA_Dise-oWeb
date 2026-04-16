@@ -35,14 +35,14 @@
           <div class="form-group">
             <label>Nombre del Servicio</label>
             <input
-              v-model="newService.name"
+              v-model="newService.servicio"
               type="text"
               placeholder="Ej: Consulta Médica"
             />
           </div>
           <div class="form-group">
             <label>Precio (Gs.)</label>
-            <input v-model.number="newService.price" type="number" />
+            <input v-model.number="newService.precio" type="number" />
           </div>
           <div class="form-actions">
             <button @click="closeModal" class="btn-secondary">Cancelar</button>
@@ -56,37 +56,74 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+// Importamos el servicio que creamos
+import { apiServicios } from "../services/ApiServices"; 
 
 const services = ref([]);
 const isModalOpen = ref(false);
-const newService = ref({ name: "", price: 0 });
-
-onMounted(() => {
-  const saved = localStorage.getItem("spa-services");
-  if (saved) services.value = JSON.parse(saved);
+const isLoading = ref(false); // Opcional: para mostrar un spinner
+const newService = ref({ 
+  nombre: "", 
+  precio: 0, 
+  duracion_minutos: 30, // Valor por defecto o añade un input en el modal
+  descripcion: "" 
+});
+// 1. Cargar datos desde la API al montar el componente
+onMounted(async () => {
+  await fetchServices();
 });
 
-const openModal = () => (isModalOpen.value = true);
-const closeModal = () => (isModalOpen.value = false);
-
-const saveService = () => {
-  if (newService.value.name) {
-    services.value.push({ ...newService.value, id: Date.now() });
-    localStorage.setItem("spa-services", JSON.stringify(services.value));
-    newService.value = { name: "", price: 0 };
-    closeModal();
+const fetchServices = async () => {
+  isLoading.value = true;
+  try {
+    const data = await apiServicios.getServicios();
+    services.value = data;
+  } catch (error) {
+    console.error("Error al cargar servicios:", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
-const deleteService = (id) => {
-  services.value = services.value.filter((s) => s.id !== id);
-  localStorage.setItem("spa-services", JSON.stringify(services.value));
+const openModal = () => (isModalOpen.value = true);
+const closeModal = () => {
+  isModalOpen.value = false;
+  newService.value = { servicio: "", precio: 0 };
+};
+
+// 2. Guardar servicio en la Base de Datos
+const saveService = async () => {
+  if (newService.value.servicio) {
+    try {
+      const created = await apiServicios.createServicio(newService.value);
+      // Agregamos el resultado a la lista reactiva
+      services.value.push(created);
+      closeModal();
+    } catch (error) {
+      alert("No se pudo guardar el servicio");
+    }
+  }
+};
+
+// 3. Eliminar servicio de la Base de Datos
+const deleteService = async (id) => {
+  if (confirm("¿Estás seguro de eliminar este servicio?")) {
+    try {
+      await apiServicios.deleteServicio(id);
+      // Filtramos la lista local para que desaparezca visualmente
+      services.value = services.value.filter((s) => s.id !== id);
+    } catch (error) {
+      alert("Error al eliminar el servicio");
+    }
+  }
 };
 
 const formatMoney = (val) =>
-  new Intl.NumberFormat("es-PY", { style: "currency", currency: "PYG" }).format(
-    val,
-  );
+  new Intl.NumberFormat("es-PY", { 
+    style: "currency", 
+    currency: "PYG",
+    minimumFractionDigits: 0 
+  }).format(val);
 </script>
 
 <style scoped>
