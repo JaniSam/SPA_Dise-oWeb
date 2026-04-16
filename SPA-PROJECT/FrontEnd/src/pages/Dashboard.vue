@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-container">
+    <div v-if="isLoading" class="loading-overlay">Actualizando panel...</div>
     <header class="dashboard-header">
       <h1>Panel de Control</h1>
       <p class="date-display">{{ currentDate }}</p>
@@ -154,16 +155,14 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { apiReservas } from "../services/ApiReserva"; // Importamos tu servicio
 import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  TransitionRoot,
-  TransitionChild,
+  Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild,
 } from "@headlessui/vue";
 
 const allEvents = ref([]);
 const totalClients = ref(0);
+const isLoading = ref(true);
 const now = new Date();
 
 // Lógica de Atención
@@ -177,27 +176,47 @@ const supplies = ref([
 ]);
 const clinicalForm = ref({ note: "", usedSupplies: {} });
 
-onMounted(() => {
-  cargarDatos();
+onMounted(async () => {
+  await cargarDatosDesdeAPI();
 });
 
-const cargarDatos = () => {
-  const savedEvents = localStorage.getItem("spa-events");
-  if (savedEvents) allEvents.value = JSON.parse(savedEvents);
+const cargarDatosDesdeAPI = async () => {
+  isLoading.value = true;
+  try {
+    // 1. Traemos las reservas reales de la BD
+    const resData = await apiReservas.getReservas();
+    
+    // 2. Mapeamos al formato que ya usa tu Dashboard
+    allEvents.value = resData.map(r => ({
+      id: r.id.toString(),
+      title: `${r.cliente.nombre} ${r.cliente.apellido}`,
+      start: `${r.fecha}T${r.hora_inicio}`,
+      end: `${r.fecha}T${r.hora_fin}`,
+      extendedProps: { 
+        status: r.estado.toLowerCase(), // Lo pasamos a minúsculas para tus clases CSS
+        obs: r.obs,
+        cliente_id: r.cliente_id,
+        servicio_nombre: r.servicio.nombre
+      }
+    }));
 
-  const savedClients = localStorage.getItem("spa-clients");
-  if (savedClients) {
-    totalClients.value = JSON.parse(savedClients).length;
+    // 3. Traemos el total de clientes desde el mismo endpoint de formularios
+    const formData = await apiReservas.getFormData();
+    totalClients.value = formData.clientes.length;
+
+    // Inicializar contadores de insumos
+    supplies.value.forEach((s) => {
+      if (!clinicalForm.value.usedSupplies[s.id])
+        clinicalForm.value.usedSupplies[s.id] = 0;
+    });
+  } catch (error) {
+    console.error("Error cargando datos del dashboard:", error);
+  } finally {
+    isLoading.value = false;
   }
-
-  // Inicializar contadores
-  supplies.value.forEach((s) => {
-    if (!clinicalForm.value.usedSupplies[s.id])
-      clinicalForm.value.usedSupplies[s.id] = 0;
-  });
 };
 
-// Filtrado de eventos
+// --- EL RESTO DE TUS COMPUTED Y MÉTODOS SE MANTIENEN IGUAL ---
 const todayEvents = computed(() => {
   return allEvents.value.filter((event) => {
     const eventDate = new Date(event.start);
@@ -206,74 +225,56 @@ const todayEvents = computed(() => {
 });
 
 const upcomingEvents = computed(() => {
-  // Mostramos todas las de hoy ordenadas por hora
-  return [...todayEvents.value].sort(
-    (a, b) => new Date(a.start) - new Date(b.start),
-  );
+  return [...todayEvents.value].sort((a, b) => new Date(a.start) - new Date(b.start));
 });
 
 const pendingToday = computed(() => {
-  return todayEvents.value.filter((e) => e.extendedProps.status === "pending")
-    .length;
+  // Ahora comparamos con 'pendiente' en minúsculas por el mapeo anterior
+  return todayEvents.value.filter((e) => e.extendedProps.status === "pendiente").length;
 });
 
 const currentDate = computed(() => {
   return now.toLocaleDateString("es-ES", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
 });
 
-// Métodos de Modal y Atención
+// Métodos de Modal y Formateo
 const incrementSupply = (id) => clinicalForm.value.usedSupplies[id]++;
 const decrementSupply = (id) => {
-  if (clinicalForm.value.usedSupplies[id] > 0)
-    clinicalForm.value.usedSupplies[id]--;
+  if (clinicalForm.value.usedSupplies[id] > 0) clinicalForm.value.usedSupplies[id]--;
 };
 
 const openClinicalNote = (event) => {
   selectedEvent.value = event;
   clinicalForm.value.note = event.extendedProps.clinicalNote || "";
-  const savedSupplies = event.extendedProps.suppliesUsed || {};
-  supplies.value.forEach(
-    (s) => (clinicalForm.value.usedSupplies[s.id] = savedSupplies[s.id] || 0),
-  );
   isNoteModalOpen.value = true;
 };
 
-const saveClinicalData = () => {
-  const idx = allEvents.value.findIndex((e) => e.id === selectedEvent.value.id);
-  if (idx !== -1) {
-    allEvents.value[idx].extendedProps.clinicalNote = clinicalForm.value.note;
-    allEvents.value[idx].extendedProps.suppliesUsed = {
-      ...clinicalForm.value.usedSupplies,
-    };
-    allEvents.value[idx].extendedProps.status = "confirmed";
-    localStorage.setItem("spa-events", JSON.stringify(allEvents.value));
-  }
-  closeModal();
-};
-
-const closeModal = () => {
-  isNoteModalOpen.value = false;
-};
+const closeModal = () => { isNoteModalOpen.value = false; };
 
 const formatTime = (dateStr) => {
-  return new Date(dateStr).toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(dateStr).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 };
 
 const formatStatus = (status) => {
-  const labels = {
-    pending: "Pendiente",
-    confirmed: "Confirmado",
-    cancelled: "Cancelado",
-  };
+  const labels = { pendiente: "Pendiente", confirmada: "Confirmado", cancelada: "Cancelado", completada: "Completado" };
   return labels[status] || status;
+};
+
+// Para guardar la atención, podrías usar el updateReserva de tu API
+const saveClinicalData = async () => {
+  try {
+    const payload = {
+       estado: 'CONFIRMADA', // O 'COMPLETADA'
+       obs: clinicalForm.value.note 
+    };
+    await apiReservas.updateReserva(selectedEvent.value.id, payload);
+    await cargarDatosDesdeAPI(); // Recargar todo
+    closeModal();
+  } catch (e) {
+    alert("Error al actualizar la cita");
+  }
 };
 </script>
 

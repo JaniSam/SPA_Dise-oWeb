@@ -931,3 +931,8 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
+ALTER TABLE public.usuarios 
+ADD COLUMN cedula character varying(20) UNIQUE;
+
+ALTER TABLE public.usuarios 
+ALTER COLUMN cedula SET NOT NULL;

@@ -22,19 +22,21 @@ class UsuarioController extends Controller
     {
         // 🔴 VALIDACIÓN
         $request->validate([
-            'email' => 'required|email|unique:usuarios,email',
-            'nombre' => 'required',
-            'password' => 'required|min:6'
+            'email'   => 'required|email|unique:usuarios,email',
+            'nombre'  => 'required',
+            'password'=> 'required|min:6',
+            'cedula'  => 'nullable|unique:usuarios,cedula',  // ← agrega esta línea
         ]);
 
         $usuario = Usuario::create([
-            'nombre' => $request->nombre,
+            'nombre'   => $request->nombre,
             'apellido' => $request->apellido,
-            'email' => $request->email,
+            'email'    => $request->email,
             'telefono' => $request->telefono,
+            'cedula'   => $request->cedula,   // ← agrega esta línea
             'password' => $request->password ? bcrypt($request->password) : null,
-            'rol_id' => $request->rol_id,
-            'activo' => true
+            'rol_id'   => $request->rol_id,
+            'activo'   => true
         ]);
 
         return response()->json($usuario, 201);
@@ -52,7 +54,8 @@ class UsuarioController extends Controller
         $usuario = Usuario::findOrFail($id);
 
         $request->validate([
-            'email' => 'required|email|unique:usuarios,email,' . $id
+            'email' => 'required|email|unique:usuarios,email,' . $id,
+            'cedula' => 'nullable|unique:usuarios,cedula,' . $id
         ]);
 
         $data = $request->all();

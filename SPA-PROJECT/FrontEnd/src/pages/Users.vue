@@ -14,6 +14,7 @@
       <table>
         <thead>
           <tr>
+            <th>Cédula</th>
             <th>Nombre</th>
             <th>Email</th>
             <th>Teléfono</th>
@@ -25,6 +26,7 @@
 
         <tbody>
           <tr v-for="user in users" :key="user.id">
+            <td>{{ user.cedula || '—' }}</td>
             <td class="user-name">
               {{ user.nombre }} {{ user.apellido }}
             </td>
@@ -63,6 +65,7 @@
           <input v-model="form.apellido" placeholder="Apellido" autocomplete="Apellido" />
           <input v-model="form.email" placeholder="Email" required autocomplete="Email"/>
           <input v-model="form.telefono" placeholder="Teléfono" autocomplete="Telefono"/>
+          <input v-model="form.cedula" placeholder="Cédula" />
           <div class="password-group">
             <input
               v-model="form.password"
@@ -207,6 +210,7 @@ export default {
         apellido: "",
         email: "",
         telefono: "",
+        cedula: "",
         password: "",
         confirmPassword: "",
         rol_id: 2,
@@ -217,7 +221,7 @@ export default {
 
     openEditModal(user) {
       this.isEditing = true;
-      this.form = { ...user, password: "" };
+      this.form = { ...user, password: "", cedula: user.cedula || "" };
       this.showModal = true;
     },
 

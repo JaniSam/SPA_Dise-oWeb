@@ -13,6 +13,7 @@
       <table>
         <thead>
           <tr>
+            <th>Cédula</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Email</th>
@@ -24,6 +25,7 @@
 
         <tbody>
           <tr v-for="client in clients" :key="client.id">
+            <td>{{ client.cedula || '—' }}</td>
             <td class="client-name">{{ client.nombre }}</td>
             <td>{{ client.apellido }}</td>
             <td>{{ client.email }}</td>
@@ -51,10 +53,17 @@
 
         <form @submit.prevent="saveClient" class="spa-form">
           <div class="form-row">
+            
+            <div class="input-group">
+              <label>Cédula</label>
+              <input type="text" v-model="form.cedula" placeholder="1234567" />
+            </div>
+
             <div class="input-group">
               <label>Nombre</label>
               <input type="text" v-model="form.nombre" required />
             </div>
+
             <div class="input-group">
               <label>Apellido</label>
               <input type="text" v-model="form.apellido" />
@@ -136,7 +145,7 @@ export default {
     openCreateModal() {
       this.isEditing = false;
       this.form = { 
-        id: null, nombre: "", apellido: "", email: "", telefono: "", password: "", activo: true, rol_id: 4 
+        id: null, nombre: "", apellido: "", email: "", telefono: "", cedula: "", password: "", activo: true, rol_id: 4 
       };
       this.showModal = true;
     },
