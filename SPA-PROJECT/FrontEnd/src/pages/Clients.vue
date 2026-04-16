@@ -160,7 +160,7 @@ export default {
 }
   },
 };
-
+</script>
 
 <style scoped>
 /* Estructura y Fondo */
